@@ -70,6 +70,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
         <!-- 阶段五接入 AI 时再加：com.alibaba:dashscope-sdk-java -->
 
         <dependency>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.user.mapper.UserMapper">
+
+    <resultMap id="UserMap" type="com.lyrascore.user.entity.User">
+        <id     column="id"            property="id"/>
+        <result column="username"      property="username"/>
+        <result column="password_hash" property="passwordHash"/>
+        <result column="avatar_url"    property="avatarUrl"/>
+        <result column="role"          property="role"/>
+        <result column="status"        property="status"/>
+        <result column="created_at"    property="createdAt"/>
+    </resultMap>
+
+    <select id="selectByUsername" resultMap="UserMap">
+        SELECT id, username, password_hash, avatar_url, role, status, created_at
+        FROM t_user
+        WHERE username = #{username}
+    </select>
+
+    <insert id="insert" parameterType="com.lyrascore.user.entity.User"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_user (username, password_hash, avatar_url, role, status)
+        VALUES (#{username}, #{passwordHash}, #{avatarUrl}, #{role}, #{status})
+    </insert>
+
+</mapper>
