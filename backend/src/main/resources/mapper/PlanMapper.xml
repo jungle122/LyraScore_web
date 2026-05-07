@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.plan.mapper.PlanMapper">
+
+    <resultMap id="PlanMap" type="com.lyrascore.plan.entity.Plan">
+        <id     column="id"          property="id"/>
+        <result column="user_id"     property="userId"/>
+        <result column="title"       property="title"/>
+        <result column="status"      property="status"/>
+        <result column="start_date"  property="startDate"/>
+        <result column="end_date"    property="endDate"/>
+    </resultMap>
+
+    <resultMap id="PlanItemMap" type="com.lyrascore.plan.entity.PlanItem">
+        <id     column="id"           property="id"/>
+        <result column="plan_id"      property="planId"/>
+        <result column="score_id"     property="scoreId"/>
+        <result column="sort_order"   property="sortOrder"/>
+        <result column="title"        property="scoreTitle"/>
+        <result column="artist"       property="scoreArtist"/>
+        <result column="image_url"    property="scoreImageUrl"/>
+    </resultMap>
+
+    <insert id="insertPlan" parameterType="com.lyrascore.plan.entity.Plan"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_practice_plan (user_id, title, status, start_date, end_date)
+        VALUES (#{userId}, #{title}, #{status}, #{startDate}, #{endDate})
+    </insert>
+
+    <select id="selectPlansByUser" resultMap="PlanMap">
+        SELECT id, user_id, title, status, start_date, end_date
+        FROM t_practice_plan
+        WHERE user_id = #{userId}
+        ORDER BY start_date DESC, id DESC
+    </select>
+
+    <select id="selectPlanById" resultMap="PlanMap">
+        SELECT id, user_id, title, status, start_date, end_date
+        FROM t_practice_plan
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deletePlanByIdAndUser">
+        DELETE FROM t_practice_plan WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE t_practice_plan SET status = #{status}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <insert id="insertItem">
+        INSERT INTO t_plan_items (plan_id, score_id, sort_order)
+        VALUES (#{planId}, #{scoreId}, #{sortOrder})
+    </insert>
+
+    <delete id="deleteItem">
+        DELETE FROM t_plan_items WHERE plan_id = #{planId} AND score_id = #{scoreId}
+    </delete>
+
+    <!-- JOIN 乐谱表查关联曲目；这里是任务 9 的 JOIN 教学点 -->
+    <select id="selectItemsByPlan" resultMap="PlanItemMap">
+        SELECT
+            pi.id, pi.plan_id, pi.score_id, pi.sort_order,
+            s.title, s.artist, s.image_url
+        FROM t_plan_items pi
+        INNER JOIN t_score s ON pi.score_id = s.id
+        WHERE pi.plan_id = #{planId}
+        ORDER BY pi.sort_order ASC, pi.id ASC
+    </select>
+
+</mapper>

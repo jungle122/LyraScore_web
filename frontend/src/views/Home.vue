@@ -13,9 +13,13 @@
         <h3>🎼 我的谱仓</h3>
         <p>上传、管理你的吉他谱</p>
       </el-card>
-      <el-card class="mod disabled" shadow="hover">
+      <el-card class="mod" shadow="hover" @click="$router.push('/plans')">
         <h3>📅 练习计划</h3>
-        <p>（即将上线）</p>
+        <p>组织阶段性练习目标</p>
+      </el-card>
+      <el-card class="mod" shadow="hover" @click="$router.push('/logs')">
+        <h3>📊 练习日志</h3>
+        <p>记录练习时长 + 看统计</p>
       </el-card>
       <el-card class="mod disabled" shadow="hover">
         <h3>📋 歌单</h3>

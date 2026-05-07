@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.log.mapper.PracticeLogMapper">
+
+    <resultMap id="LogMap" type="com.lyrascore.log.entity.PracticeLog">
+        <id     column="id"             property="id"/>
+        <result column="user_id"        property="userId"/>
+        <result column="score_id"       property="scoreId"/>
+        <result column="duration_mins"  property="durationMins"/>
+        <result column="current_bpm"    property="currentBpm"/>
+        <result column="thoughts"       property="thoughts"/>
+        <result column="log_time"       property="logTime"/>
+        <result column="title"          property="scoreTitle"/>
+        <result column="artist"         property="scoreArtist"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.lyrascore.log.entity.PracticeLog"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_practice_log (user_id, score_id, duration_mins, current_bpm, thoughts)
+        VALUES (#{userId}, #{scoreId}, #{durationMins}, #{currentBpm}, #{thoughts})
+    </insert>
+
+    <!-- JOIN 出曲名/歌手，列表里直接展示 -->
+    <select id="selectByUser" resultMap="LogMap">
+        SELECT l.id, l.user_id, l.score_id, l.duration_mins, l.current_bpm, l.thoughts, l.log_time,
+               s.title, s.artist
+        FROM t_practice_log l
+        INNER JOIN t_score s ON l.score_id = s.id
+        WHERE l.user_id = #{userId}
+        ORDER BY l.log_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- ── 聚合统计：教学目标 GROUP BY / SUM ── -->
+
+    <select id="sumMinutes" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(duration_mins), 0)
+        FROM t_practice_log
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="sumMinutesSince" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(duration_mins), 0)
+        FROM t_practice_log
+        WHERE user_id = #{userId}
+          AND log_time >= #{since}
+    </select>
+
+    <!-- 按乐谱分组累计：JOIN + GROUP BY 双教学点 -->
+    <select id="sumByScore" resultType="java.util.Map">
+        SELECT s.id          AS scoreId,
+               s.title       AS scoreTitle,
+               s.artist      AS scoreArtist,
+               SUM(l.duration_mins) AS totalMins,
+               COUNT(*)             AS sessions
+        FROM t_practice_log l
+        INNER JOIN t_score s ON l.score_id = s.id
+        WHERE l.user_id = #{userId}
+        GROUP BY s.id, s.title, s.artist
+        ORDER BY totalMins DESC
+    </select>
+
+    <!-- 按日分组：DATE() + GROUP BY -->
+    <select id="sumByDay" resultType="java.util.Map">
+        SELECT DATE(log_time)         AS day,
+               SUM(duration_mins)     AS totalMins
+        FROM t_practice_log
+        WHERE user_id = #{userId}
+          AND log_time >= #{since}
+        GROUP BY DATE(log_time)
+        ORDER BY day ASC
+    </select>
+
+</mapper>
