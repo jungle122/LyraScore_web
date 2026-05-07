@@ -21,13 +21,13 @@
         <h3>📊 练习日志</h3>
         <p>记录练习时长 + 看统计</p>
       </el-card>
-      <el-card class="mod disabled" shadow="hover">
+      <el-card class="mod" shadow="hover" @click="$router.push('/setlists')">
         <h3>📋 歌单</h3>
-        <p>（即将上线）</p>
+        <p>多对多收藏你的乐谱</p>
       </el-card>
-      <el-card class="mod disabled" shadow="hover">
-        <h3>👥 社交 & 点歌</h3>
-        <p>（即将上线）</p>
+      <el-card class="mod" shadow="hover" @click="$router.push('/friends')">
+        <h3>👥 社交</h3>
+        <p>添加好友、互相关注</p>
       </el-card>
     </div>
 

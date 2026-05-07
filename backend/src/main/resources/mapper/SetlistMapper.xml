@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.setlist.mapper.SetlistMapper">
+
+    <resultMap id="SetlistMap" type="com.lyrascore.setlist.entity.Setlist">
+        <id     column="id"           property="id"/>
+        <result column="user_id"      property="userId"/>
+        <result column="name"         property="name"/>
+        <result column="description"  property="description"/>
+        <result column="cover_url"    property="coverUrl"/>
+        <result column="created_at"   property="createdAt"/>
+    </resultMap>
+
+    <resultMap id="SetlistItemMap" type="com.lyrascore.setlist.entity.SetlistItem">
+        <id     column="id"           property="id"/>
+        <result column="setlist_id"   property="setlistId"/>
+        <result column="score_id"     property="scoreId"/>
+        <result column="added_at"     property="addedAt"/>
+        <result column="title"        property="scoreTitle"/>
+        <result column="artist"       property="scoreArtist"/>
+        <result column="image_url"    property="scoreImageUrl"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.lyrascore.setlist.entity.Setlist"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_setlist (user_id, name, description, cover_url)
+        VALUES (#{userId}, #{name}, #{description}, #{coverUrl})
+    </insert>
+
+    <select id="selectByUser" resultMap="SetlistMap">
+        SELECT id, user_id, name, description, cover_url, created_at
+        FROM t_setlist
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectById" resultMap="SetlistMap">
+        SELECT id, user_id, name, description, cover_url, created_at
+        FROM t_setlist WHERE id = #{id}
+    </select>
+
+    <delete id="deleteByIdAndUser">
+        DELETE FROM t_setlist WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <insert id="insertItem">
+        INSERT INTO t_setlist_items (setlist_id, score_id) VALUES (#{setlistId}, #{scoreId})
+    </insert>
+
+    <delete id="deleteItem">
+        DELETE FROM t_setlist_items WHERE setlist_id = #{setlistId} AND score_id = #{scoreId}
+    </delete>
+
+    <select id="selectItemsBySetlist" resultMap="SetlistItemMap">
+        SELECT si.id, si.setlist_id, si.score_id, si.added_at,
+               s.title, s.artist, s.image_url
+        FROM t_setlist_items si
+        INNER JOIN t_score s ON si.score_id = s.id
+        WHERE si.setlist_id = #{setlistId}
+        ORDER BY si.added_at DESC
+    </select>
+
+</mapper>

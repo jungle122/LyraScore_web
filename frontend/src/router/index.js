@@ -49,6 +49,21 @@ const router = createRouter({
       component: () => import('@/views/Logs.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/setlists',
+      component: () => import('@/views/Setlists.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/setlists/:id',
+      component: () => import('@/views/SetlistDetail.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/friends',
+      component: () => import('@/views/Friends.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
