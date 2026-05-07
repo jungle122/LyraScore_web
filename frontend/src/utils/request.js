@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
+import { useUserStore } from '@/stores/user'
+
 const service = axios.create({
 // 在这里配 baseURL 和 timeout
 baseURL : '/api',
@@ -9,7 +11,8 @@ timeout : 10000,
 //请求拦截器
 service.interceptors.request.use(
 (config) => {
-    const token = localStorage.getItem('token')
+    const userStore = useUserStore()
+    const token = userStore.token
     if (token) {
         config.headers.Authorization = 'Bearer ' + token
     }
@@ -32,7 +35,8 @@ service.interceptors.response.use(
 
     if (res.code === 401) {
     ElMessage.error('未登录或登录已过期')
-    localStorage.removeItem('token')
+    const userStore = useUserStore()
+    userStore.logout()
     router.push('/login')
     return Promise.reject(new Error(res.message))
     }

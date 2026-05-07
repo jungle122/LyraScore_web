@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.score.mapper.ScoreMapper">
+
+    <resultMap id="ScoreMap" type="com.lyrascore.score.entity.Score">
+        <id     column="id"          property="id"/>
+        <result column="user_id"     property="userId"/>
+        <result column="title"       property="title"/>
+        <result column="artist"      property="artist"/>
+        <result column="image_url"   property="imageUrl"/>
+        <result column="tuning"      property="tuning"/>
+        <result column="capo"        property="capo"/>
+        <result column="bpm"         property="bpm"/>
+        <result column="is_public"   property="isPublic"/>
+        <result column="memo"        property="memo"/>
+        <result column="created_at"  property="createdAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.lyrascore.score.entity.Score"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_score
+            (user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo)
+        VALUES
+            (#{userId}, #{title}, #{artist}, #{imageUrl}, #{tuning}, #{capo}, #{bpm}, #{isPublic}, #{memo})
+    </insert>
+
+    <select id="selectByUser" resultMap="ScoreMap">
+        SELECT id, user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo, created_at
+        FROM t_score
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectById" resultMap="ScoreMap">
+        SELECT id, user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo, created_at
+        FROM t_score
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deleteByIdAndUser">
+        DELETE FROM t_score WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+</mapper>

@@ -38,7 +38,7 @@ show-password />
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { login } from '@/api/auth'
+import { useUserStore } from '@/stores/user'
 
 // reactive 是 ref 的"对象版本"——整个对象每个字段都是响应式的
 // 这样 form.username 和 form.password 都能跟 input 双向绑定
@@ -52,6 +52,7 @@ const loading = ref(false)
 
 // 拿到路由对象，用来登录成功后跳转
 const router = useRouter()
+const userStore = useUserStore()
 
 // 点击"登录"按钮触发的函数
 async function handleLogin() {
@@ -67,9 +68,8 @@ if (!form.username || !form.password) {
 loading.value = true
 // TODO 3: try / catch / finally 三段式：
 try {
-const data = await login(form)   // 调 api，await 等结果
-// data 长啥样？响应拦截器已经剥壳了，所以 data === { token, userId,username, role }
-localStorage.setItem('token', data.token)
+// 组件不再关心 token 存哪、userInfo 怎么拆——交给 store
+await userStore.login(form)
 ElMessage.success('登录成功')
 router.push('/')
 } catch (e) {
