@@ -13,7 +13,7 @@
 1.  **琴友（User）**：系统的核心使用者
     *   作为主人（Owner）：在自己的谱仓、练习计划、歌单、日志中拥有完全的 CRUD 权限
     *   作为访客（Friend）：可向好友点歌、添加好友
-2.  **管理员（Admin）**：`t_user.role = 'admin'`，目前仅作为权限位预留，**管理员后台 UI 暂未实现**
+2.  **管理员（Admin）**：`t_user.role = 'admin'`，可访问独立的**管理员后台**（数据大盘 / 用户管理 / 字典管理）；权限通过后端 `@RequireRole("admin")` 注解 + 前端路由守卫双层保护
 
 ---
 
@@ -62,6 +62,15 @@
 | **自动解锁** | 用户行为（写日志、上传谱、加好友、点歌、建计划/歌单）发生后**自动评估并发牌**，无需手动触发 | **Spring `@EventListener` 事件驱动**：`PracticeLogCreatedEvent` 监听 + 关键 service 直调 `BadgeService.evaluateAndAward`；`INSERT IGNORE` + `uk_user_badge_pair` 实现幂等（替代早期方案中的 DB 触发器） |
 | **进度可视化** | 徽章页未解锁徽章显示进度条（如「已练 45 / 60 分钟」） | LEFT JOIN 查询 + 前端进度条 |
 
+### 模块七：管理员后台（治理与监控层）✅
+
+| 功能名称 | 功能描述 | 数据库 / 技术亮点 |
+|---|---|---|
+| **数据大盘** | 9 项全站聚合统计：注册用户、上传乐谱、练习计划、练习日志、累计练琴分钟、歌单、好友对数、点歌请求、已颁徽章 | **跨多表 COUNT 聚合 + SUM**（`AdminMapper`）|
+| **用户管理** | 列出全站用户、冻结/解冻违规账号；管理员账号无法被冻结（前端 disabled） | `UPDATE t_user SET status = ?`；登录处校验 status；返回前抹掉 `password_hash` |
+| **字典管理** | 字典条目 CRUD（创建/编辑/启停/删除）；前端按 `dict_type` 分组、自动建议 `dict_key`、排序值步长 10 方便插队 | `t_dictionary` CRUD + `uk_dictionary_type_key` 唯一键约束 |
+| **权限控制** | 后端类级 `@RequireRole("admin")` 注解 + JwtInterceptor 拦截校验；前端路由守卫 `meta.requiresAdmin` + 侧边栏按角色切换视图 | **RBAC**（基于角色的访问控制）|
+
 ### 模块六：实用音乐工具（应用闭环）✅
 
 | 功能名称 | 功能描述 | 技术亮点 |
@@ -78,7 +87,6 @@
 
 - ❌ 长图拼接分享（前端 canvas 长图功能）
 - ❌ 双态点歌队列（vault 内/外双色高亮区分）——AI 清洗后的歌单已展示足够
-- ❌ 管理员后台 UI（数据大盘 / 字典维护 / 用户冻结）——`t_dictionary` 等表的 admin CRUD 暂未做 UI
 
 ---
 
@@ -89,6 +97,7 @@
 3. **JOIN 教学**：计划详情页用 INNER JOIN 拉乐谱字段，避免 N+1 查询
 4. **外键策略分级**：CASCADE（纯关联表）vs RESTRICT（历史日志）
 5. **事件驱动**：`@EventListener` 解耦业务主流程和徽章评估
-6. **手写 JWT 拦截器**：不依赖 Spring Security，理解原理
+6. **手写 JWT 拦截器 + RBAC**：不依赖 Spring Security；`@RequireRole` 自定义注解 + JwtInterceptor 反射读取实现基于角色的访问控制
 7. **AI 双场景集成 + 失败降级**：点歌清洗 + 练习周报，AI 失败时业务不中断
 8. **本地存储策略**：图片落本地磁盘 + DB 存相对路径；不引入对象存储/CDN
+9. **跨表聚合统计**：管理员数据大盘的全站 COUNT/SUM 查询，配合按用户聚合的 GROUP BY，覆盖两类典型聚合场景
