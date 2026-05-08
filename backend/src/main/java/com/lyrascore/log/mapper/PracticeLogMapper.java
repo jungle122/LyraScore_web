@@ -10,6 +10,8 @@ public interface PracticeLogMapper {
 
     int insert(PracticeLog log);
 
+    int deleteByIdAndUser(@Param("id") Long id, @Param("userId") Long userId);
+
     List<PracticeLog> selectByUser(@Param("userId") Long userId, @Param("limit") Integer limit);
 
     Long sumMinutes(@Param("userId") Long userId);

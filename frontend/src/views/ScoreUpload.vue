@@ -10,15 +10,16 @@
         <el-form-item label="乐谱图片" required>
           <el-upload
             :auto-upload="false"
-            :limit="1"
+            :limit="12"
             :on-change="onFileChange"
             :on-remove="onFileRemove"
-            list-type="picture"
+            list-type="picture-card"
             accept="image/*"
+            multiple
           >
-            <el-button type="primary">选择图片</el-button>
+            <el-icon><Plus /></el-icon>
             <template #tip>
-              <div class="el-upload__tip">支持 jpg/png/gif/webp，最大 10MB。</div>
+              <div class="el-upload__tip">支持多张 jpg/png/gif/webp，最多 12 张，单张最大 10MB。</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -29,6 +30,22 @@
 
         <el-form-item label="原唱/歌手">
           <el-input v-model="form.artist" placeholder="选填" maxlength="100" />
+        </el-form-item>
+
+        <el-form-item label="乐器">
+          <el-radio-group v-model="form.instrument">
+            <el-radio-button label="吉他" />
+            <el-radio-button label="尤克里里" />
+            <el-radio-button label="其他" />
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="风格">
+          <el-radio-group v-model="form.style">
+            <el-radio-button label="弹唱" />
+            <el-radio-button label="指弹" />
+            <el-radio-button label="其他" />
+          </el-radio-group>
         </el-form-item>
 
         <el-form-item label="调式">
@@ -65,14 +82,17 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { createScore } from '@/api/score'
 
 const router = useRouter()
-const file = ref(null)
+const files = ref([])         // 多张：File 对象数组
 const loading = ref(false)
 const form = reactive({
   title: '',
   artist: '',
+  instrument: '吉他',
+  style: '弹唱',
   tuning: '',
   capo: null,
   bpm: null,
@@ -80,18 +100,18 @@ const form = reactive({
   memo: '',
 })
 
-function onFileChange(uploadFile) {
-  // el-upload 的 file 对象，真实 File 在 uploadFile.raw
-  file.value = uploadFile.raw
+function onFileChange(uploadFile, fileList) {
+  // fileList 是当前所有 el-upload 的文件项；提取 raw File 对象
+  files.value = fileList.map(f => f.raw).filter(Boolean)
 }
 
-function onFileRemove() {
-  file.value = null
+function onFileRemove(uploadFile, fileList) {
+  files.value = fileList.map(f => f.raw).filter(Boolean)
 }
 
 async function submit() {
-  if (!file.value) {
-    ElMessage.warning('请选择图片')
+  if (files.value.length === 0) {
+    ElMessage.warning('请至少选择一张图片')
     return
   }
   if (!form.title) {
@@ -99,9 +119,12 @@ async function submit() {
     return
   }
   const fd = new FormData()
-  fd.append('file', file.value)
+  // 多图：同 name 多条 → MultipartFile[]
+  files.value.forEach(f => fd.append('files', f))
   fd.append('title', form.title)
   if (form.artist) fd.append('artist', form.artist)
+  if (form.instrument) fd.append('instrument', form.instrument)
+  if (form.style) fd.append('style', form.style)
   if (form.tuning) fd.append('tuning', form.tuning)
   if (form.capo != null) fd.append('capo', form.capo)
   if (form.bpm != null) fd.append('bpm', form.bpm)

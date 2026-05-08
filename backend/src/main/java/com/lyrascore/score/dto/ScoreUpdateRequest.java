@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ScoreCreateRequest {
+public class ScoreUpdateRequest {
 
     @NotBlank(message = "歌曲名不能为空")
     @Size(max = 100)
@@ -18,16 +18,14 @@ public class ScoreCreateRequest {
     private String tuning;
 
     private Integer capo;
-
     private Integer bpm;
-
-    private Integer isPublic = 0;
-
-    @Size(max = 20)
-    private String instrument;     // 吉他 / 尤克里里 / 其他
+    private Integer isPublic;
 
     @Size(max = 20)
-    private String style;          // 弹唱 / 指弹 / 其他
+    private String instrument;
+
+    @Size(max = 20)
+    private String style;
 
     private String memo;
 }

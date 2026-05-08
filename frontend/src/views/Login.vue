@@ -84,14 +84,15 @@ loading.value = false   // 不管成功失败都要关 loading
 
 <style scoped>
 .login-container {
-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-background: #f5f7fa;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lyra-bg-warm);
 }
-
 .login-card {
-width: 380px;
+  width: 380px;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(217, 119, 6, 0.10) !important;
 }
 </style>

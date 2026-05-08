@@ -10,11 +10,14 @@ public class ScoreVO {
     private Long userId;
     private String title;
     private String artist;
-    private String imageUrl;
+    private String imageUrl;          // 多图用 , 分隔
     private String tuning;
     private Integer capo;
     private Integer bpm;
     private Integer isPublic;
+    private Integer practiceStatus;
+    private String instrument;
+    private String style;
     private String memo;
     private LocalDateTime createdAt;
 
@@ -29,6 +32,9 @@ public class ScoreVO {
         v.setCapo(s.getCapo());
         v.setBpm(s.getBpm());
         v.setIsPublic(s.getIsPublic());
+        v.setPracticeStatus(s.getPracticeStatus());
+        v.setInstrument(s.getInstrument());
+        v.setStyle(s.getStyle());
         v.setMemo(s.getMemo());
         v.setCreatedAt(s.getCreatedAt());
         return v;

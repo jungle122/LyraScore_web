@@ -132,8 +132,8 @@ CREATE TABLE t_plan_items (
     PRIMARY KEY (id),
     UNIQUE KEY uk_plan_items_pair (plan_id, score_id),
     KEY idx_plan_items_score (score_id),
-    CONSTRAINT fk_plan_items_plan  FOREIGN KEY (plan_id)  REFERENCES t_practice_plan (id) ON DELETE CASCADE  ON UPDATE CASCADE,
-    CONSTRAINT fk_plan_items_score FOREIGN KEY (score_id) REFERENCES t_score (id)         ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT fk_plan_items_plan  FOREIGN KEY (plan_id)  REFERENCES t_practice_plan (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_plan_items_score FOREIGN KEY (score_id) REFERENCES t_score (id)         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='练习计划-乐谱关联表';
 
 
@@ -183,8 +183,8 @@ CREATE TABLE t_setlist_items (
     PRIMARY KEY (id),
     UNIQUE KEY uk_setlist_items_pair (setlist_id, score_id),
     KEY idx_setlist_items_score (score_id),
-    CONSTRAINT fk_setlist_items_setlist FOREIGN KEY (setlist_id) REFERENCES t_setlist (id) ON DELETE CASCADE  ON UPDATE CASCADE,
-    CONSTRAINT fk_setlist_items_score   FOREIGN KEY (score_id)   REFERENCES t_score (id)   ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT fk_setlist_items_setlist FOREIGN KEY (setlist_id) REFERENCES t_setlist (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_setlist_items_score   FOREIGN KEY (score_id)   REFERENCES t_score (id)   ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='歌单-乐谱关联表';
 
 

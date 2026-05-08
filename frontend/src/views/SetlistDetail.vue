@@ -15,14 +15,14 @@
 
       <el-empty v-if="!data.items || data.items.length === 0" description="还没添加乐谱" />
 
-      <el-card v-for="it in data.items" :key="it.id" class="item" shadow="never">
+      <el-card v-for="it in data.items" :key="it.id" class="item" shadow="hover" @click="$router.push(`/scores/${it.scoreId}`)">
         <div class="row">
           <img :src="resolveImg(it.scoreImageUrl)" class="thumb" />
           <div class="meta">
             <div class="title">{{ it.scoreTitle }}</div>
             <div class="artist">{{ it.scoreArtist || '—' }}</div>
           </div>
-          <el-button size="small" type="danger" plain @click="onRemove(it)">移除</el-button>
+          <el-button size="small" type="danger" plain @click.stop="onRemove(it)">移除</el-button>
         </div>
       </el-card>
     </div>
@@ -56,8 +56,11 @@ const selectedId = ref(null)
 
 function resolveImg(url) {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `http://localhost:8080/api${url}`
+  // 多图字段：取第一张作为封面
+  const first = url.split(',')[0]?.trim() || ''
+  if (!first) return ''
+  if (first.startsWith('http')) return first
+  return `http://localhost:8080/api${first}`
 }
 
 async function load() {
@@ -100,7 +103,7 @@ onMounted(load)
 .content h1 { margin: 0 0 4px; }
 .desc { color: #666; margin-bottom: 24px; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 12px; }
-.item { margin-bottom: 8px; }
+.item { margin-bottom: 8px; cursor: pointer; }
 .row { display: flex; align-items: center; gap: 16px; }
 .thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
 .meta { flex: 1; }

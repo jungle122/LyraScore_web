@@ -16,3 +16,11 @@ export function deleteScore(id) {
 export function createScore(formData) {
   return service.post('/scores', formData)
 }
+
+export function updateScoreStatus(id, status) {
+  return service.put(`/scores/${id}/status`, { status })
+}
+
+export function updateScore(id, data) {
+  return service.put(`/scores/${id}`, data)
+}

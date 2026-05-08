@@ -21,6 +21,10 @@
         VALUES (#{userId}, #{scoreId}, #{durationMins}, #{currentBpm}, #{thoughts})
     </insert>
 
+    <delete id="deleteByIdAndUser">
+        DELETE FROM t_practice_log WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
     <!-- JOIN 出曲名/歌手，列表里直接展示 -->
     <select id="selectByUser" resultMap="LogMap">
         SELECT l.id, l.user_id, l.score_id, l.duration_mins, l.current_bpm, l.thoughts, l.log_time,

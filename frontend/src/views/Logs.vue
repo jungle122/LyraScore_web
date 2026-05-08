@@ -2,10 +2,7 @@
   <div class="logs-page">
     <div class="header">
       <h2>📊 练习日志 & 统计</h2>
-      <div>
-        <el-button @click="$router.push('/')">← 返回首页</el-button>
-        <el-button type="primary" @click="openLogDialog">+ 记录一次练习</el-button>
-      </div>
+      <el-button type="primary" @click="openLogDialog">+ 记录一次练习</el-button>
     </div>
 
     <!-- 统计卡片 -->
@@ -58,6 +55,11 @@
         <el-table-column prop="durationMins" label="时长（分钟）" width="120" />
         <el-table-column prop="currentBpm" label="BPM" width="80" />
         <el-table-column prop="thoughts" label="心得" />
+        <el-table-column label="操作" width="80">
+          <template #default="{ row }">
+            <el-button size="small" type="danger" link @click="onDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
 
@@ -89,8 +91,8 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { listLogs, createLog, getStats } from '@/api/log'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { listLogs, createLog, deleteLog, getStats } from '@/api/log'
 import { listScores } from '@/api/score'
 
 const stats = ref({})
@@ -122,6 +124,19 @@ async function openLogDialog() {
   logForm.currentBpm = null
   logForm.thoughts = ''
   showLog.value = true
+}
+
+async function onDelete(row) {
+  try {
+    await ElMessageBox.confirm(
+      `确定删除这条练习日志吗？（${row.scoreTitle} - ${row.durationMins} 分钟）`,
+      '删除确认',
+      { type: 'warning' }
+    )
+  } catch { return }
+  await deleteLog(row.id)
+  ElMessage.success('已删除')
+  loadAll()
 }
 
 async function onSubmitLog() {

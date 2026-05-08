@@ -2,10 +2,7 @@
   <div class="plans-page">
     <div class="header">
       <h2>📅 我的练习计划</h2>
-      <div>
-        <el-button @click="$router.push('/')">← 返回首页</el-button>
-        <el-button type="primary" @click="showCreate = true">+ 新建计划</el-button>
-      </div>
+      <el-button type="primary" @click="showCreate = true">+ 新建计划</el-button>
     </div>
 
     <el-empty v-if="!loading && list.length === 0" description="还没有计划，新建一个吧" />

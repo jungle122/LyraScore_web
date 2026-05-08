@@ -14,4 +14,8 @@ public interface ScoreMapper {
     Score selectById(@Param("id") Long id);
 
     int deleteByIdAndUser(@Param("id") Long id, @Param("userId") Long userId);
+
+    int updateStatus(@Param("id") Long id, @Param("userId") Long userId, @Param("status") Integer status);
+
+    int updateMeta(Score score);
 }

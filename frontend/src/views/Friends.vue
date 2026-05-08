@@ -2,7 +2,6 @@
   <div class="page">
     <div class="header">
       <h2>👥 社交</h2>
-      <el-button @click="$router.push('/')">← 返回首页</el-button>
     </div>
 
     <el-tabs v-model="active">

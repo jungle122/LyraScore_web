@@ -4,36 +4,46 @@
 <mapper namespace="com.lyrascore.score.mapper.ScoreMapper">
 
     <resultMap id="ScoreMap" type="com.lyrascore.score.entity.Score">
-        <id     column="id"          property="id"/>
-        <result column="user_id"     property="userId"/>
-        <result column="title"       property="title"/>
-        <result column="artist"      property="artist"/>
-        <result column="image_url"   property="imageUrl"/>
-        <result column="tuning"      property="tuning"/>
-        <result column="capo"        property="capo"/>
-        <result column="bpm"         property="bpm"/>
-        <result column="is_public"   property="isPublic"/>
-        <result column="memo"        property="memo"/>
-        <result column="created_at"  property="createdAt"/>
+        <id     column="id"               property="id"/>
+        <result column="user_id"          property="userId"/>
+        <result column="title"            property="title"/>
+        <result column="artist"           property="artist"/>
+        <result column="image_url"        property="imageUrl"/>
+        <result column="tuning"           property="tuning"/>
+        <result column="capo"             property="capo"/>
+        <result column="bpm"              property="bpm"/>
+        <result column="is_public"        property="isPublic"/>
+        <result column="practice_status"  property="practiceStatus"/>
+        <result column="instrument"       property="instrument"/>
+        <result column="style"            property="style"/>
+        <result column="memo"             property="memo"/>
+        <result column="created_at"       property="createdAt"/>
     </resultMap>
+
+    <sql id="cols">
+        id, user_id, title, artist, image_url, tuning, capo, bpm, is_public,
+        practice_status, instrument, style, memo, created_at
+    </sql>
 
     <insert id="insert" parameterType="com.lyrascore.score.entity.Score"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_score
-            (user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo)
+            (user_id, title, artist, image_url, tuning, capo, bpm, is_public,
+             practice_status, instrument, style, memo)
         VALUES
-            (#{userId}, #{title}, #{artist}, #{imageUrl}, #{tuning}, #{capo}, #{bpm}, #{isPublic}, #{memo})
+            (#{userId}, #{title}, #{artist}, #{imageUrl}, #{tuning}, #{capo}, #{bpm}, #{isPublic},
+             #{practiceStatus}, #{instrument}, #{style}, #{memo})
     </insert>
 
     <select id="selectByUser" resultMap="ScoreMap">
-        SELECT id, user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo, created_at
+        SELECT <include refid="cols"/>
         FROM t_score
         WHERE user_id = #{userId}
         ORDER BY created_at DESC
     </select>
 
     <select id="selectById" resultMap="ScoreMap">
-        SELECT id, user_id, title, artist, image_url, tuning, capo, bpm, is_public, memo, created_at
+        SELECT <include refid="cols"/>
         FROM t_score
         WHERE id = #{id}
     </select>
@@ -41,5 +51,24 @@
     <delete id="deleteByIdAndUser">
         DELETE FROM t_score WHERE id = #{id} AND user_id = #{userId}
     </delete>
+
+    <update id="updateStatus">
+        UPDATE t_score SET practice_status = #{status}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <update id="updateMeta" parameterType="com.lyrascore.score.entity.Score">
+        UPDATE t_score
+        SET title = #{title},
+            artist = #{artist},
+            tuning = #{tuning},
+            capo = #{capo},
+            bpm = #{bpm},
+            is_public = #{isPublic},
+            instrument = #{instrument},
+            style = #{style},
+            memo = #{memo}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
 
 </mapper>

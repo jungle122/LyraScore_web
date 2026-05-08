@@ -2,10 +2,7 @@
   <div class="page">
     <div class="header">
       <h2>🎤 AI 智能点歌</h2>
-      <div>
-        <el-button @click="$router.push('/')">← 返回首页</el-button>
-        <el-button type="primary" @click="openCreate">+ 给好友点歌</el-button>
-      </div>
+      <el-button type="primary" @click="openCreate">+ 给好友点歌</el-button>
     </div>
 
     <el-tabs v-model="active">

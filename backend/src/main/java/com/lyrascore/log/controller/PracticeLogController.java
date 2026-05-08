@@ -33,4 +33,10 @@ public class PracticeLogController {
     public R<Map<String, Object>> stats() {
         return R.ok(logService.stats(UserContext.getUserId()));
     }
+
+    @DeleteMapping("/{id}")
+    public R<Void> delete(@PathVariable Long id) {
+        logService.delete(id, UserContext.getUserId());
+        return R.ok(null);
+    }
 }

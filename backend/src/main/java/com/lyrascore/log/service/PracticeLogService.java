@@ -46,6 +46,13 @@ public class PracticeLogService {
         return logMapper.selectByUser(userId, limit);
     }
 
+    public void delete(Long id, Long userId) {
+        int rows = logMapper.deleteByIdAndUser(id, userId);
+        if (rows == 0) {
+            throw new com.lyrascore.common.BusinessException(1302, "日志不存在或无权删除");
+        }
+    }
+
     /** 聚合统计：总分钟、本周分钟、按乐谱分组、近 7 日分组 */
     public Map<String, Object> stats(Long userId) {
         Map<String, Object> result = new HashMap<>();

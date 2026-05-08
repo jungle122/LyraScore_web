@@ -25,7 +25,7 @@
 
         <el-empty v-if="!data.items || data.items.length === 0" description="还没添加乐谱" />
 
-        <el-card v-for="it in data.items" :key="it.id" class="item-card" shadow="never">
+        <el-card v-for="it in data.items" :key="it.id" class="item-card" shadow="hover" @click="$router.push(`/scores/${it.scoreId}`)">
           <div class="item-row">
             <img :src="resolveImg(it.scoreImageUrl)" class="thumb" />
             <div class="item-meta">
@@ -33,8 +33,8 @@
               <div class="item-artist">{{ it.scoreArtist || '—' }}</div>
             </div>
             <div class="item-actions">
-              <el-button size="small" type="success" @click="openLogDialog(it)">记录练习</el-button>
-              <el-button size="small" type="danger" plain @click="onRemoveItem(it)">移除</el-button>
+              <el-button size="small" type="success" @click.stop="openLogDialog(it)">记录练习</el-button>
+              <el-button size="small" type="danger" plain @click.stop="onRemoveItem(it)">移除</el-button>
             </div>
           </div>
         </el-card>
@@ -104,8 +104,11 @@ const logForm = reactive({ durationMins: 30, currentBpm: null, thoughts: '' })
 
 function resolveImg(url) {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `http://localhost:8080/api${url}`
+  // 多图字段：取第一张作为封面
+  const first = url.split(',')[0]?.trim() || ''
+  if (!first) return ''
+  if (first.startsWith('http')) return first
+  return `http://localhost:8080/api${first}`
 }
 
 async function load() {
@@ -190,7 +193,7 @@ onMounted(load)
 .ml { margin-left: 8px; }
 .section { margin-top: 24px; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.item-card { margin-bottom: 8px; }
+.item-card { margin-bottom: 8px; cursor: pointer; }
 .item-row { display: flex; align-items: center; gap: 16px; }
 .thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
 .item-meta { flex: 1; }

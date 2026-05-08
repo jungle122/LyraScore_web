@@ -1,0 +1,62 @@
+/* LyraScore 全局主题 —— 暖琥珀色（吉他木色） */
+
+:root {
+  /* Element Plus 主色覆盖 */
+  --el-color-primary:          #d97706;
+  --el-color-primary-light-3:  #f59e0b;
+  --el-color-primary-light-5:  #fbbf24;
+  --el-color-primary-light-7:  #fcd34d;
+  --el-color-primary-light-8:  #fde68a;
+  --el-color-primary-light-9:  #fef3c7;
+  --el-color-primary-dark-2:   #b45309;
+
+  /* 自定义品牌渐变（米白底 + 一抹暖光） */
+  --lyra-bg-soft: linear-gradient(180deg, #fffbf5 0%, #fef6e9 100%);
+  --lyra-bg-warm: linear-gradient(135deg, #fef6e9 0%, #fde8c4 100%);
+
+  /* 中性色 */
+  --lyra-text:        #1f2937;
+  --lyra-text-muted:  #6b7280;
+  --lyra-border:      #f3e8d4;
+}
+
+/* 全局微调 */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fffbf5;
+  color: var(--lyra-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* 标题字体（衬线感，更音乐 / 文艺） */
+h1, h2, h3 {
+  font-family: "Georgia", "Songti SC", "STSong", serif;
+  letter-spacing: 0.5px;
+}
+
+/* 卡片细化：圆角 + 柔和阴影 */
+.el-card {
+  border-radius: 10px !important;
+  border-color: var(--lyra-border) !important;
+}
+
+.el-card.is-hover-shadow:hover,
+.el-card[shadow="hover"]:hover {
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.08) !important;
+}
+
+/* 按钮：实心 primary 才强刷成琥珀色，plain/text/link 保留 Element Plus 默认（白底彩字） */
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link) {
+  background-color: var(--el-color-primary) !important;
+  border-color: var(--el-color-primary) !important;
+}
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):hover {
+  background-color: var(--el-color-primary-dark-2) !important;
+  border-color: var(--el-color-primary-dark-2) !important;
+}
+
+/* 标签 */
+.el-tag {
+  border-radius: 6px;
+}
