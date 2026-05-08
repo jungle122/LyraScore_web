@@ -64,6 +64,11 @@ const router = createRouter({
       component: () => import('@/views/Friends.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/song-requests',
+      component: () => import('@/views/SongRequests.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

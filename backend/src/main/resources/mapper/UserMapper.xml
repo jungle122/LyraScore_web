@@ -19,6 +19,12 @@
         WHERE username = #{username}
     </select>
 
+    <select id="selectById" resultMap="UserMap">
+        SELECT id, username, password_hash, avatar_url, role, status, created_at
+        FROM t_user
+        WHERE id = #{id}
+    </select>
+
     <insert id="insert" parameterType="com.lyrascore.user.entity.User"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_user (username, password_hash, avatar_url, role, status)

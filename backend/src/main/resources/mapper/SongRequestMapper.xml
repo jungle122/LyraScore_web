@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyrascore.song.mapper.SongRequestMapper">
+
+    <resultMap id="SongRequestMap" type="com.lyrascore.song.entity.SongRequest">
+        <id     column="id"               property="id"/>
+        <result column="sender_id"        property="senderId"/>
+        <result column="receiver_id"      property="receiverId"/>
+        <result column="raw_input"        property="rawInput"/>
+        <result column="ai_song"          property="aiSong"/>
+        <result column="ai_artist"        property="aiArtist"/>
+        <result column="request_message"  property="requestMessage"/>
+        <result column="status"           property="status"/>
+        <result column="created_at"       property="createdAt"/>
+        <result column="sender_name"      property="senderName"/>
+        <result column="receiver_name"    property="receiverName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.lyrascore.song.entity.SongRequest"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_song_request
+            (sender_id, receiver_id, raw_input, ai_song, ai_artist, request_message, status)
+        VALUES
+            (#{senderId}, #{receiverId}, #{rawInput}, #{aiSong}, #{aiArtist}, #{requestMessage}, #{status})
+    </insert>
+
+    <select id="selectById" resultMap="SongRequestMap">
+        SELECT id, sender_id, receiver_id, raw_input, ai_song, ai_artist, request_message, status, created_at
+        FROM t_song_request WHERE id = #{id}
+    </select>
+
+    <select id="selectSentBy" resultMap="SongRequestMap">
+        SELECT sr.id, sr.sender_id, sr.receiver_id, sr.raw_input, sr.ai_song, sr.ai_artist,
+               sr.request_message, sr.status, sr.created_at,
+               u.username AS receiver_name
+        FROM t_song_request sr
+        INNER JOIN t_user u ON u.id = sr.receiver_id
+        WHERE sr.sender_id = #{userId}
+        ORDER BY sr.created_at DESC
+    </select>
+
+    <select id="selectReceivedBy" resultMap="SongRequestMap">
+        SELECT sr.id, sr.sender_id, sr.receiver_id, sr.raw_input, sr.ai_song, sr.ai_artist,
+               sr.request_message, sr.status, sr.created_at,
+               u.username AS sender_name
+        FROM t_song_request sr
+        INNER JOIN t_user u ON u.id = sr.sender_id
+        WHERE sr.receiver_id = #{userId}
+        ORDER BY sr.created_at DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_song_request SET status = #{status}
+        WHERE id = #{id} AND receiver_id = #{receiverId}
+    </update>
+
+    <update id="updateAiResult">
+        UPDATE t_song_request
+        SET ai_song = #{aiSong}, ai_artist = #{aiArtist}, status = #{status}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

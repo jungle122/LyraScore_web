@@ -29,6 +29,10 @@
         <h3>👥 社交</h3>
         <p>添加好友、互相关注</p>
       </el-card>
+      <el-card class="mod" shadow="hover" @click="$router.push('/song-requests')">
+        <h3>🎤 AI 点歌</h3>
+        <p>自由文本→AI 清洗成曲名/歌手</p>
+      </el-card>
     </div>
 
     <div class="footer">
