@@ -19,4 +19,30 @@
         ORDER BY sort_order ASC, id ASC
     </select>
 
+    <select id="selectAll" resultMap="DictMap">
+        SELECT id, dict_type, dict_key, dict_value, sort_order, is_active
+        FROM t_dictionary
+        ORDER BY dict_type ASC, sort_order ASC, id ASC
+    </select>
+
+    <insert id="insert" parameterType="com.lyrascore.dictionary.entity.Dictionary"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_dictionary (dict_type, dict_key, dict_value, sort_order, is_active)
+        VALUES (#{dictType}, #{dictKey}, #{dictValue}, #{sortOrder}, #{isActive})
+    </insert>
+
+    <update id="update" parameterType="com.lyrascore.dictionary.entity.Dictionary">
+        UPDATE t_dictionary
+        SET dict_type = #{dictType},
+            dict_key = #{dictKey},
+            dict_value = #{dictValue},
+            sort_order = #{sortOrder},
+            is_active = #{isActive}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_dictionary WHERE id = #{id}
+    </delete>
+
 </mapper>

@@ -23,6 +23,9 @@ service.interceptors.request.use(
     return Promise.reject(error)
 }
 )
+// 401 防重复：并行请求同时拿到 401 时只弹一个 toast、只跳一次
+let lastUnauthorizedAt = 0
+
 //响应拦截器（剥 R 壳 + 错误处理）
 service.interceptors.response.use(
 (response) => {
@@ -34,10 +37,17 @@ service.interceptors.response.use(
     }
 
     if (res.code === 401) {
-    ElMessage.error('未登录或登录已过期')
-    const userStore = useUserStore()
-    userStore.logout()
-    router.push('/login')
+    const now = Date.now()
+    // 2 秒内的多次 401 合并：只弹一次提示、只清一次态、只跳一次路由
+    if (now - lastUnauthorizedAt > 2000) {
+        lastUnauthorizedAt = now
+        ElMessage.error('未登录或登录已过期')
+        const userStore = useUserStore()
+        userStore.logout()
+        if (router.currentRoute.value.path !== '/login') {
+            router.push('/login')
+        }
+    }
     return Promise.reject(new Error(res.message))
     }
 

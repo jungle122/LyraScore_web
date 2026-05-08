@@ -89,6 +89,21 @@ const router = createRouter({
       component: () => import('@/views/FindTab.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/admin',
+      component: () => import('@/views/admin/AdminDashboard.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/users',
+      component: () => import('@/views/admin/AdminUsers.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/dictionary',
+      component: () => import('@/views/admin/AdminDictionary.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
   ],
 })
 
@@ -98,7 +113,15 @@ router.beforeEach((to) => {
     return '/login'
   }
   if (to.meta.guestOnly && userStore.isLoggedIn) {
+    return userStore.userInfo?.role === 'admin' ? '/admin' : '/'
+  }
+  // 管理员路由：仅 role=admin 可访问；普通用户即使知道 URL 直访也会被踢回首页
+  if (to.meta.requiresAdmin && userStore.userInfo?.role !== 'admin') {
     return '/'
+  }
+  // 管理员访问普通首页 → 重定向到数据大盘
+  if (to.path === '/' && userStore.userInfo?.role === 'admin') {
+    return '/admin'
   }
 })
 

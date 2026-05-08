@@ -10,4 +10,8 @@ public interface UserMapper {
     User selectById(@Param("id") Long id);
 
     int insert(User user);
+
+    java.util.List<User> selectAll();
+
+    int updateStatus(@Param("id") Long id, @Param("status") Integer status);
 }

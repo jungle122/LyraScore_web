@@ -31,4 +31,14 @@
         VALUES (#{username}, #{passwordHash}, #{avatarUrl}, #{role}, #{status})
     </insert>
 
+    <select id="selectAll" resultMap="UserMap">
+        SELECT id, username, password_hash, avatar_url, role, status, created_at
+        FROM t_user
+        ORDER BY id ASC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_user SET status = #{status} WHERE id = #{id}
+    </update>
+
 </mapper>

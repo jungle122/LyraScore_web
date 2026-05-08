@@ -18,54 +18,74 @@
         router
         class="side-menu"
       >
-        <el-menu-item index="/">
-          <el-icon><HomeFilled /></el-icon>
-          <template #title>首页</template>
-        </el-menu-item>
+        <!-- 管理员视图：只显示管理员模块 -->
+        <template v-if="isAdmin">
+          <div class="menu-group" v-if="!collapsed">管理员</div>
+          <el-menu-item index="/admin">
+            <el-icon><DataAnalysis /></el-icon>
+            <template #title>数据大盘</template>
+          </el-menu-item>
+          <el-menu-item index="/admin/users">
+            <el-icon><UserFilled /></el-icon>
+            <template #title>用户管理</template>
+          </el-menu-item>
+          <el-menu-item index="/admin/dictionary">
+            <el-icon><Document /></el-icon>
+            <template #title>字典管理</template>
+          </el-menu-item>
+        </template>
 
-        <div class="menu-group" v-if="!collapsed">核心模块</div>
-        <el-menu-item index="/scores">
-          <el-icon><Folder /></el-icon>
-          <template #title>谱仓</template>
-        </el-menu-item>
-        <el-menu-item index="/plans">
-          <el-icon><Calendar /></el-icon>
-          <template #title>练习计划</template>
-        </el-menu-item>
-        <el-menu-item index="/logs">
-          <el-icon><TrendCharts /></el-icon>
-          <template #title>练习日志</template>
-        </el-menu-item>
-        <el-menu-item index="/setlists">
-          <el-icon><Tickets /></el-icon>
-          <template #title>歌单</template>
-        </el-menu-item>
-        <el-menu-item index="/friends">
-          <el-icon><User /></el-icon>
-          <template #title>社交</template>
-        </el-menu-item>
-        <el-menu-item index="/song-requests">
-          <el-icon><Microphone /></el-icon>
-          <template #title>AI 点歌</template>
-        </el-menu-item>
-        <el-menu-item index="/badges">
-          <el-icon><Medal /></el-icon>
-          <template #title>成就徽章</template>
-        </el-menu-item>
+        <!-- 普通用户视图：核心模块 + 小工具 -->
+        <template v-else>
+          <el-menu-item index="/">
+            <el-icon><HomeFilled /></el-icon>
+            <template #title>首页</template>
+          </el-menu-item>
 
-        <div class="menu-group" v-if="!collapsed">小工具</div>
-        <el-menu-item index="/tuner">
-          <el-icon><Setting /></el-icon>
-          <template #title>吉他定音器</template>
-        </el-menu-item>
-        <el-menu-item index="/metronome">
-          <el-icon><AlarmClock /></el-icon>
-          <template #title>节拍器</template>
-        </el-menu-item>
-        <el-menu-item index="/find-tab">
-          <el-icon><Search /></el-icon>
-          <template #title>找谱搜索</template>
-        </el-menu-item>
+          <div class="menu-group" v-if="!collapsed">核心模块</div>
+          <el-menu-item index="/scores">
+            <el-icon><Folder /></el-icon>
+            <template #title>谱仓</template>
+          </el-menu-item>
+          <el-menu-item index="/plans">
+            <el-icon><Calendar /></el-icon>
+            <template #title>练习计划</template>
+          </el-menu-item>
+          <el-menu-item index="/logs">
+            <el-icon><TrendCharts /></el-icon>
+            <template #title>练习日志</template>
+          </el-menu-item>
+          <el-menu-item index="/setlists">
+            <el-icon><Tickets /></el-icon>
+            <template #title>歌单</template>
+          </el-menu-item>
+          <el-menu-item index="/friends">
+            <el-icon><User /></el-icon>
+            <template #title>社交</template>
+          </el-menu-item>
+          <el-menu-item index="/song-requests">
+            <el-icon><Microphone /></el-icon>
+            <template #title>AI 点歌</template>
+          </el-menu-item>
+          <el-menu-item index="/badges">
+            <el-icon><Medal /></el-icon>
+            <template #title>成就徽章</template>
+          </el-menu-item>
+
+          <div class="menu-group" v-if="!collapsed">小工具</div>
+          <el-menu-item index="/tuner">
+            <el-icon><Setting /></el-icon>
+            <template #title>吉他定音器</template>
+          </el-menu-item>
+          <el-menu-item index="/metronome">
+            <el-icon><AlarmClock /></el-icon>
+            <template #title>节拍器</template>
+          </el-menu-item>
+          <el-menu-item index="/find-tab">
+            <el-icon><Search /></el-icon>
+            <template #title>找谱搜索</template>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
 
@@ -116,6 +136,7 @@ import { ElMessage } from 'element-plus'
 import {
   HomeFilled, Folder, Calendar, TrendCharts, Tickets, User, Microphone, Medal,
   Setting, AlarmClock, ArrowDown, SwitchButton, Expand, Fold, Search,
+  DataAnalysis, UserFilled, Document,
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
@@ -127,6 +148,7 @@ const collapsed = ref(false)
 const avatarLetter = computed(() =>
   (userStore.userInfo?.username || '?').charAt(0).toUpperCase()
 )
+const isAdmin = computed(() => userStore.userInfo?.role === 'admin')
 
 const CRUMB_MAP = {
   '/': '首页',
@@ -141,6 +163,9 @@ const CRUMB_MAP = {
   '/tuner': '吉他定音器',
   '/metronome': '节拍器',
   '/find-tab': '找谱搜索',
+  '/admin': '数据大盘',
+  '/admin/users': '用户管理',
+  '/admin/dictionary': '字典管理',
 }
 const currentCrumb = computed(() => {
   const p = route.path
@@ -162,7 +187,7 @@ onMounted(ensureUserInfo)
 watch(() => userStore.isLoggedIn, ensureUserInfo)
 
 function onUserCmd(cmd) {
-  if (cmd === 'home') router.push('/')
+  if (cmd === 'home') router.push(isAdmin.value ? '/admin' : '/')
   if (cmd === 'logout') {
     userStore.logout()
     ElMessage.success('已退出')
