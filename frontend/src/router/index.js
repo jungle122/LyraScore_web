@@ -74,6 +74,16 @@ const router = createRouter({
       component: () => import('@/views/Badges.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/tuner',
+      component: () => import('@/views/Tuner.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/metronome',
+      component: () => import('@/views/Metronome.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

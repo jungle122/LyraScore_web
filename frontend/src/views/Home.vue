@@ -52,6 +52,23 @@
         </el-card>
       </div>
     </section>
+
+    <!-- 小工具 -->
+    <section class="modules">
+      <h2 class="section-title">小工具</h2>
+      <div class="grid">
+        <el-card class="mod" shadow="hover" @click="$router.push('/tuner')">
+          <div class="mod-emoji">🎸</div>
+          <div class="mod-name">吉他定音器</div>
+          <div class="mod-desc">5 种调弦预设 + 整体降调</div>
+        </el-card>
+        <el-card class="mod" shadow="hover" @click="$router.push('/metronome')">
+          <div class="mod-emoji">⏱</div>
+          <div class="mod-name">节拍器</div>
+          <div class="mod-desc">30-250 BPM，4 种拍号</div>
+        </el-card>
+      </div>
+    </section>
   </div>
 </template>
 
