@@ -51,6 +51,52 @@ public class AiService {
 
     private final ObjectMapper json = new ObjectMapper();
 
+    private static final String COACH_PROMPT = """
+            你是 LyraScore 的吉他练习教练 Lyra Coach。
+            基于用户的练习数据，写一份温暖、具体的练习总结报告。要求：
+            1. 总长 120-200 字，用第二人称「你」，语气友好像朋友
+            2. 必须包含：累计/本周时长的亮点、最爱练的曲目（含具体分钟数）、近 7 天的练习节奏、一句改进建议
+            3. 不要使用 markdown 标题或符号，直接写流畅自然段
+            4. 结尾用一句激励的话收尾，比如「下周加油！」之类
+            5. 如果数据不足（比如没练习记录），就坦诚指出并鼓励用户开始记录
+            """;
+
+    /** 生成 AI 练习周报，失败返回 null。 */
+    public String generatePracticeReport(String statsJson) {
+        if (!enabled) {
+            log.info("AI 未启用，跳过周报生成");
+            return null;
+        }
+        if (apiKey == null || apiKey.isBlank()) {
+            log.warn("AI 已启用但 api-key 为空");
+            return null;
+        }
+        try {
+            RestClient client = RestClient.builder()
+                    .baseUrl(ENDPOINT)
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .build();
+
+            Map<String, Object> body = Map.of(
+                    "model", model,
+                    "messages", List.of(
+                            Map.of("role", "system", "content", COACH_PROMPT),
+                            Map.of("role", "user",   "content", "练习数据：\n" + statsJson + "\n\n请生成报告：")
+                    ),
+                    "temperature", 0.7
+            );
+            String resp = client.post().body(body).retrieve().body(String.class);
+            if (resp == null) return null;
+            JsonNode root = json.readTree(resp);
+            String content = root.path("choices").path(0).path("message").path("content").asText("");
+            return content.isBlank() ? null : content.trim();
+        } catch (Exception e) {
+            log.warn("AI 周报生成失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
     /** 返回 [song, artist]；任意一项可能为空字符串。失败返回 null。 */
     public String[] cleanSongRequest(String rawInput) {
         if (!enabled) {

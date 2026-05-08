@@ -27,7 +27,7 @@
             :percentage="progressOf(b)"
             :stroke-width="6"
             :show-text="false"
-            color="#1677ff"
+            color="#d97706"
             class="progress"
           />
           <div class="progress-text">{{ progressLabelOf(b) }}</div>

@@ -1,22 +1,23 @@
-/* LyraScore 全局主题 —— 后台体面风（Ant Design 蓝 + 蓝灰中性） */
+/* LyraScore 全局主题 —— 琥珀色（吉他木色） */
 
 :root {
-  /* Element Plus 主色：Ant Design Blue */
-  --el-color-primary:          #1677ff;
-  --el-color-primary-light-3:  #4096ff;
-  --el-color-primary-light-5:  #69b1ff;
-  --el-color-primary-light-7:  #91caff;
-  --el-color-primary-light-8:  #bae0ff;
-  --el-color-primary-light-9:  #e6f4ff;
-  --el-color-primary-dark-2:   #0958d9;
+  /* Element Plus 主色：琥珀 */
+  --el-color-primary:          #d97706;
+  --el-color-primary-light-3:  #f59e0b;
+  --el-color-primary-light-5:  #fbbf24;
+  --el-color-primary-light-7:  #fcd34d;
+  --el-color-primary-light-8:  #fde68a;
+  --el-color-primary-light-9:  #fef3c7;
+  --el-color-primary-dark-2:   #b45309;
 
   /* 自定义品牌色板 */
-  --lyra-bg-page:    #f5f7fa;          /* 内容区灰底 */
-  --lyra-bg-card:    #ffffff;          /* 卡片白底 */
-  --lyra-bg-soft:    linear-gradient(180deg, #f0f5ff 0%, #e6f4ff 100%); /* 登录页 */
-  --lyra-bg-accent:  linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%); /* 强调面板 */
-  --lyra-sidebar-bg: #ffffff;          /* 侧边栏 */
-  --lyra-topbar-bg:  #ffffff;          /* 顶栏 */
+  --lyra-bg-page:    #f5f7fa;
+  --lyra-bg-card:    #ffffff;
+  --lyra-bg-soft:    linear-gradient(180deg, #fffbf5 0%, #fef6e9 100%); /* 登录页 */
+  --lyra-bg-warm:    linear-gradient(135deg, #fef6e9 0%, #fde8c4 100%); /* 强调面板 */
+  --lyra-bg-accent:  linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); /* tile 渐变 */
+  --lyra-sidebar-bg: #ffffff;
+  --lyra-topbar-bg:  #ffffff;
 
   /* 中性色 */
   --lyra-text:        #1f2937;
@@ -26,7 +27,6 @@
   --lyra-border-soft: #f0f1f3;
 }
 
-/* 全局 reset */
 html, body {
   margin: 0;
   padding: 0;
@@ -37,7 +37,6 @@ html, body {
   font-size: 14px;
 }
 
-/* 标题：保持后台体面感，不用衬线 */
 h1, h2, h3, h4 {
   font-weight: 600;
   letter-spacing: 0;
@@ -47,17 +46,15 @@ h1 { font-size: 22px; }
 h2 { font-size: 18px; }
 h3 { font-size: 15px; }
 
-/* 卡片：方正一点，更后台 */
 .el-card {
   border-radius: 6px !important;
   border-color: var(--lyra-border-soft) !important;
 }
 .el-card.is-hover-shadow:hover,
 .el-card[shadow="hover"]:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.10) !important;
 }
 
-/* 按钮：实心 primary 强刷蓝色，plain/text/link 走默认 */
 .el-button--primary:not(.is-plain):not(.is-text):not(.is-link) {
   background-color: var(--el-color-primary) !important;
   border-color: var(--el-color-primary) !important;
@@ -67,12 +64,10 @@ h3 { font-size: 15px; }
   border-color: var(--el-color-primary-dark-2) !important;
 }
 
-/* 标签：半透明背景 */
 .el-tag {
   border-radius: 4px;
 }
 
-/* 菜单：去除外边距，更服帖 */
 .el-menu {
   border-right: none !important;
 }

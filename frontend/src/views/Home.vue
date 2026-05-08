@@ -94,7 +94,7 @@ const badgeCount = ref({ unlocked: 0, total: 0 })
 const statsLoading = ref(false)
 
 const modules = [
-  { path: '/scores',        name: '我的谱仓',  desc: '上传管理乐谱',     icon: markRaw(Folder),       color: '#1677ff' },
+  { path: '/scores',        name: '我的谱仓',  desc: '上传管理乐谱',     icon: markRaw(Folder),       color: '#d97706' },
   { path: '/plans',         name: '练习计划',  desc: '阶段性练习目标',   icon: markRaw(Calendar),     color: '#722ed1' },
   { path: '/logs',          name: '练习日志',  desc: '记录与统计',       icon: markRaw(TrendCharts),  color: '#13c2c2' },
   { path: '/setlists',      name: '歌单',      desc: '多对多收藏',       icon: markRaw(Tickets),      color: '#fa8c16' },
@@ -103,7 +103,7 @@ const modules = [
   { path: '/badges',        name: '成就徽章',  desc: '事件驱动发牌',     icon: markRaw(Medal),        color: '#faad14' },
 ]
 const tools = [
-  { path: '/tuner',     name: '吉他定音器', desc: '5 种调弦预设',         icon: markRaw(Setting),     color: '#1677ff' },
+  { path: '/tuner',     name: '吉他定音器', desc: '5 种调弦预设',         icon: markRaw(Setting),     color: '#d97706' },
   { path: '/metronome', name: '节拍器',     desc: '30-250 BPM',           icon: markRaw(AlarmClock),  color: '#13c2c2' },
 ]
 

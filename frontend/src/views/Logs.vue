@@ -21,6 +21,34 @@
       </el-card>
     </div>
 
+    <!-- AI 练习周报 -->
+    <el-card class="section ai-report-card" shadow="never">
+      <template #header>
+        <div class="ai-header">
+          <b>🤖 AI 练习周报</b>
+          <el-button
+            type="primary"
+            size="small"
+            :loading="reportLoading"
+            @click="loadReport"
+          >
+            {{ report ? '重新生成' : '生成本周总结' }}
+          </el-button>
+        </div>
+      </template>
+
+      <el-empty v-if="!report && !reportLoading" description="点击右上角生成你的专属练习总结" />
+
+      <div v-else-if="report" class="ai-report-body">
+        <p class="ai-text">{{ report.text }}</p>
+        <div class="ai-meta">
+          <el-tag v-if="report.aiPowered" type="success" size="small">AI 生成</el-tag>
+          <el-tag v-else type="info" size="small">本地降级</el-tag>
+          <span class="ai-time">{{ report.generatedAt }}</span>
+        </div>
+      </div>
+    </el-card>
+
     <!-- 按乐谱聚合 -->
     <el-card class="section" shadow="never">
       <template #header><b>各曲累计时长（GROUP BY 乐谱）</b></template>
@@ -92,17 +120,36 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { listLogs, createLog, deleteLog, getStats } from '@/api/log'
+import { listLogs, createLog, deleteLog, getStats, getReport } from '@/api/log'
 import { listScores } from '@/api/score'
 
 const stats = ref({})
 const logs = ref([])
 const statsLoading = ref(false)
 
+const report = ref(null)         // { text, aiPowered, generatedAt }
+const reportLoading = ref(false)
+
 const showLog = ref(false)
 const logging = ref(false)
 const scoresList = ref([])
 const logForm = reactive({ scoreId: null, durationMins: 30, currentBpm: null, thoughts: '' })
+
+async function loadReport() {
+  reportLoading.value = true
+  try {
+    const data = await getReport()
+    report.value = {
+      text: data.report,
+      aiPowered: data.aiPowered,
+      generatedAt: new Date().toLocaleString('zh-CN'),
+    }
+  } catch (e) {
+    ElMessage.error('生成失败，请稍后再试')
+  } finally {
+    reportLoading.value = false
+  }
+}
 
 async function loadAll() {
   statsLoading.value = true
@@ -165,4 +212,17 @@ onMounted(loadAll)
 .stat-value { font-size: 32px; font-weight: 600; color: var(--el-color-primary); margin-top: 6px; }
 .unit { font-size: 14px; color: #999; font-weight: normal; margin-left: 4px; }
 .section { margin-bottom: 20px; }
+
+.ai-report-card { background: linear-gradient(135deg, #fffbf0 0%, #fef6e0 100%); }
+.ai-header { display: flex; justify-content: space-between; align-items: center; }
+.ai-report-body { padding: 4px 0; }
+.ai-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--lyra-text);
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+}
+.ai-meta { display: flex; align-items: center; gap: 8px; }
+.ai-time { color: var(--lyra-text-dim); font-size: 12px; }
 </style>

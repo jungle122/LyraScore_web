@@ -1,51 +1,51 @@
 <template>
   <div class="page">
-    <h2 class="title">⏱ 节拍器</h2>
-    <p class="hint">支持 30-250 BPM，4 种拍号；强拍音色更亮。</p>
-
-    <!-- 拍号 -->
-    <div class="ts-row">
-      <span class="ts-label">拍号</span>
-      <el-radio-group v-model="tsIndex" @change="onTsChange">
-        <el-radio-button v-for="(t, i) in timeSignatures" :key="t.name" :label="i">{{ t.name }}</el-radio-button>
-      </el-radio-group>
+    <div class="hd">
+      <h1>⏱ 节拍器</h1>
+      <p class="sub">极简模式：BPM、拍号、强拍变调一应俱全。</p>
     </div>
 
-    <!-- 主面板 -->
-    <div class="panel">
-      <div class="bpm-display">
-        <span class="bpm-num">{{ bpm }}</span>
-        <span class="bpm-unit">BPM</span>
-      </div>
+    <!-- BPM 大数字 -->
+    <div class="bpm-display">
+      <span class="bpm-num">{{ bpm }}</span>
+      <span class="bpm-unit">BPM</span>
+    </div>
 
-      <!-- 节拍指示灯 -->
-      <div class="beats">
-        <div
-          v-for="n in beatsPerBar"
-          :key="n"
-          class="beat-dot"
-          :class="{ on: isPlaying && currentBeat === n, strong: n === 1 }"
-        />
-      </div>
+    <!-- 大圆形播放/停止按钮 -->
+    <button class="play-btn" :class="{ playing: isPlaying }" @click="togglePlay">
+      <span class="icon" v-if="!isPlaying">▶</span>
+      <span class="icon stop" v-else></span>
+    </button>
 
-      <!-- BPM 控制 -->
-      <div class="bpm-controls">
-        <el-button circle size="large" @click="changeBpm(-5)">-5</el-button>
-        <el-button circle size="large" @click="changeBpm(-1)">-1</el-button>
-        <el-button type="primary" size="large" round @click="togglePlay" class="play-btn">
-          {{ isPlaying ? '■ 停止' : '▶ 开始' }}
-        </el-button>
-        <el-button circle size="large" @click="changeBpm(1)">+1</el-button>
-        <el-button circle size="large" @click="changeBpm(5)">+5</el-button>
-      </div>
+    <!-- 拍点小圆 -->
+    <div class="beats">
+      <span
+        v-for="n in beatsPerBar"
+        :key="n"
+        class="dot"
+        :class="{ on: isPlaying && currentBeat === n, strong: n === 1 }"
+      />
+    </div>
 
+    <!-- BPM 滑块 + ± 按钮 -->
+    <div class="bpm-controls">
+      <el-button circle text @click="changeBpm(-5)" class="bpm-step">-5</el-button>
+      <el-button circle text @click="changeBpm(-1)" class="bpm-step">-1</el-button>
       <el-slider
         v-model="bpm"
         :min="30" :max="250" :step="1"
-        :marks="{ 30: '30', 90: '90', 120: '120', 180: '180', 250: '250' }"
         @change="onBpmChange"
-        style="margin-top: 28px;"
+        class="bpm-slider"
       />
+      <el-button circle text @click="changeBpm(1)" class="bpm-step">+1</el-button>
+      <el-button circle text @click="changeBpm(5)" class="bpm-step">+5</el-button>
+    </div>
+
+    <!-- 拍号切换（次要） -->
+    <div class="ts-row">
+      <el-radio-group v-model="tsIndex" size="small" @change="onTsChange">
+        <el-radio-button v-for="(t, i) in timeSignatures" :key="t.name" :label="i">{{ t.name }}</el-radio-button>
+      </el-radio-group>
     </div>
   </div>
 </template>
@@ -89,7 +89,7 @@ function playTick() {
   if (!tickBuffer) return
   const source = audioCtx.createBufferSource()
   source.buffer = tickBuffer
-  source.playbackRate.value = next === 1 ? 1.5 : 1.0   // 强拍更高音
+  source.playbackRate.value = next === 1 ? 1.5 : 1.0
   source.connect(audioCtx.destination)
   source.start()
 }
@@ -137,61 +137,104 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.page { padding: 32px 24px; max-width: 720px; margin: 0 auto; }
-.title { margin: 0 0 4px; }
-.hint { color: var(--lyra-text-muted); margin: 0 0 24px; }
-
-.ts-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-.ts-label { color: var(--lyra-text-muted); font-size: 13px; }
-
-.panel {
-  background: var(--lyra-bg-accent);
-  border: 1px solid var(--lyra-border);
-  border-radius: 16px;
-  padding: 36px 24px;
+.page {
+  padding: 40px 24px;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
+.hd { margin-bottom: 24px; }
+.hd h1 { margin: 0 0 4px; }
+.sub { color: var(--lyra-text-muted); margin: 0; font-size: 13px; }
 
+/* BPM 大数字 */
 .bpm-display {
   display: flex;
   align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 6px;
+  margin-bottom: 36px;
 }
 .bpm-num {
-  font-size: 96px;
-  font-weight: 700;
-  color: var(--el-color-primary);
-  font-family: "Georgia", serif;
+  font-size: 80px;
+  font-weight: 200;          /* 极细 */
+  color: var(--lyra-text);
   line-height: 1;
+  letter-spacing: -2px;
+  font-family: "Georgia", serif;
 }
 .bpm-unit {
-  font-size: 18px;
-  color: var(--lyra-text-muted);
-  letter-spacing: 2px;
+  font-size: 14px;
+  color: var(--lyra-text-dim);
+  letter-spacing: 3px;
 }
 
-.beats {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-.beat-dot {
-  width: 16px; height: 16px;
+/* 大圆播放按钮：参考极简风 */
+.play-btn {
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  background: rgba(217, 119, 6, 0.18);
-  transition: 0.06s;
-}
-.beat-dot.on { background: var(--el-color-primary); transform: scale(1.4); }
-.beat-dot.on.strong { background: #b45309; box-shadow: 0 0 12px var(--el-color-primary); }
-
-.bpm-controls {
+  background: transparent;
+  border: 2px solid var(--lyra-text);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  transition: 0.18s;
+  margin-bottom: 30px;
 }
-.play-btn { min-width: 140px; font-size: 16px; }
+.play-btn:hover {
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary);
+}
+.play-btn.playing {
+  background: var(--lyra-text);
+  border-color: var(--lyra-text);
+}
+.play-btn .icon {
+  font-size: 38px;
+  color: var(--lyra-text);
+  line-height: 1;
+  margin-left: 4px;     /* 视觉居中三角 */
+}
+.play-btn.playing .icon {
+  margin-left: 0;
+  display: inline-block;
+  width: 24px;
+  height: 28px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+/* 拍点：小灰圆 */
+.beats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  transition: 0.06s;
+}
+.dot.on { background: var(--el-color-primary); transform: scale(1.4); }
+.dot.on.strong { background: var(--el-color-primary-dark-2); box-shadow: 0 0 8px var(--el-color-primary); }
+
+/* BPM 控件横排 */
+.bpm-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 18px;
+}
+.bpm-step { color: var(--lyra-text-muted); font-size: 13px; }
+.bpm-slider { flex: 1; }
+
+/* 拍号 */
+.ts-row { margin-top: 4px; }
 </style>

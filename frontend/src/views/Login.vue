@@ -93,6 +93,6 @@ loading.value = false   // 不管成功失败都要关 loading
 .login-card {
   width: 380px;
   border-radius: 8px !important;
-  box-shadow: 0 16px 40px rgba(22, 119, 255, 0.10) !important;
+  box-shadow: 0 16px 40px rgba(217, 119, 6, 0.10) !important;
 }
 </style>
