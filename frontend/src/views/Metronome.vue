@@ -145,7 +145,7 @@ onUnmounted(() => {
 .ts-label { color: var(--lyra-text-muted); font-size: 13px; }
 
 .panel {
-  background: var(--lyra-bg-warm);
+  background: var(--lyra-bg-accent);
   border: 1px solid var(--lyra-border);
   border-radius: 16px;
   padding: 36px 24px;

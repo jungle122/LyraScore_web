@@ -156,7 +156,7 @@ onMounted(loadAll)
 .time { color: #999; font-size: 12px; margin-left: auto; }
 .ai { font-size: 16px; margin: 8px 0; padding: 8px 12px; background: #ecf5ff; border-radius: 4px; }
 .raw { color: #666; font-size: 13px; }
-.msg { color: #409eff; font-size: 13px; margin-top: 4px; }
+.msg { color: var(--el-color-primary); font-size: 13px; margin-top: 4px; }
 .actions { margin-top: 8px; }
 .hint { font-size: 12px; color: #909399; margin-top: 4px; }
 </style>

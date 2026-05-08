@@ -1,80 +1,81 @@
 <template>
   <div class="home">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-inner">
-        <h1>
-          <span class="hero-greeting">{{ greeting }}，</span>
-          <span class="hero-name">{{ userStore.userInfo?.username || '...' }}</span>
-        </h1>
-        <p class="hero-sub">把每一次练习，存进你的云端谱仓。</p>
+    <!-- 欢迎条 -->
+    <div class="welcome">
+      <div>
+        <h1>{{ greeting }}，{{ userStore.userInfo?.username || '...' }}</h1>
+        <p class="welcome-sub">把每一次练习，存进你的云端谱仓。</p>
       </div>
-    </section>
+    </div>
 
-    <!-- 功能模块 -->
-    <section class="modules">
+    <!-- 概览统计（dashboard tile） -->
+    <div class="stat-row" v-loading="statsLoading">
+      <el-card class="stat-card" shadow="never">
+        <div class="stat-label">总练习时长</div>
+        <div class="stat-value">{{ stats.totalMins || 0 }} <span class="stat-unit">分钟</span></div>
+      </el-card>
+      <el-card class="stat-card" shadow="never">
+        <div class="stat-label">本周练习</div>
+        <div class="stat-value">{{ stats.weekMins || 0 }} <span class="stat-unit">分钟</span></div>
+      </el-card>
+      <el-card class="stat-card" shadow="never">
+        <div class="stat-label">乐谱数</div>
+        <div class="stat-value">{{ scoreCount }} <span class="stat-unit">张</span></div>
+      </el-card>
+      <el-card class="stat-card" shadow="never">
+        <div class="stat-label">解锁徽章</div>
+        <div class="stat-value">{{ badgeCount.unlocked }} <span class="stat-unit">/ {{ badgeCount.total }}</span></div>
+      </el-card>
+    </div>
+
+    <!-- 模块快捷入口 -->
+    <div class="section">
       <h2 class="section-title">核心模块</h2>
       <div class="grid">
-        <el-card class="mod" shadow="hover" @click="$router.push('/scores')">
-          <div class="mod-emoji">🎼</div>
-          <div class="mod-name">我的谱仓</div>
-          <div class="mod-desc">上传、管理你的吉他谱</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/plans')">
-          <div class="mod-emoji">📅</div>
-          <div class="mod-name">练习计划</div>
-          <div class="mod-desc">组织阶段性练习目标</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/logs')">
-          <div class="mod-emoji">📊</div>
-          <div class="mod-name">练习日志</div>
-          <div class="mod-desc">记录练习时长 + 看统计</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/setlists')">
-          <div class="mod-emoji">📋</div>
-          <div class="mod-name">歌单</div>
-          <div class="mod-desc">多对多收藏你的乐谱</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/friends')">
-          <div class="mod-emoji">👥</div>
-          <div class="mod-name">社交</div>
-          <div class="mod-desc">添加好友、互相关注</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/song-requests')">
-          <div class="mod-emoji">🎤</div>
-          <div class="mod-name">AI 点歌</div>
-          <div class="mod-desc">自由文本 → AI 清洗成曲名/歌手</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/badges')">
-          <div class="mod-emoji">🏅</div>
-          <div class="mod-name">成就徽章</div>
-          <div class="mod-desc">事件驱动自动发牌</div>
+        <el-card v-for="m in modules" :key="m.path" class="mod" shadow="hover" @click="$router.push(m.path)">
+          <div class="mod-row">
+            <el-icon class="mod-icon" :style="{ color: m.color }">
+              <component :is="m.icon" />
+            </el-icon>
+            <div class="mod-text">
+              <div class="mod-name">{{ m.name }}</div>
+              <div class="mod-desc">{{ m.desc }}</div>
+            </div>
+          </div>
         </el-card>
       </div>
-    </section>
+    </div>
 
     <!-- 小工具 -->
-    <section class="modules">
+    <div class="section">
       <h2 class="section-title">小工具</h2>
       <div class="grid">
-        <el-card class="mod" shadow="hover" @click="$router.push('/tuner')">
-          <div class="mod-emoji">🎸</div>
-          <div class="mod-name">吉他定音器</div>
-          <div class="mod-desc">5 种调弦预设 + 整体降调</div>
-        </el-card>
-        <el-card class="mod" shadow="hover" @click="$router.push('/metronome')">
-          <div class="mod-emoji">⏱</div>
-          <div class="mod-name">节拍器</div>
-          <div class="mod-desc">30-250 BPM，4 种拍号</div>
+        <el-card v-for="m in tools" :key="m.path" class="mod" shadow="hover" @click="$router.push(m.path)">
+          <div class="mod-row">
+            <el-icon class="mod-icon" :style="{ color: m.color }">
+              <component :is="m.icon" />
+            </el-icon>
+            <div class="mod-text">
+              <div class="mod-name">{{ m.name }}</div>
+              <div class="mod-desc">{{ m.desc }}</div>
+            </div>
+          </div>
         </el-card>
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, markRaw } from 'vue'
+import {
+  Folder, Calendar, TrendCharts, Tickets, User, Microphone, Medal,
+  Setting, AlarmClock,
+} from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { getStats } from '@/api/log'
+import { listScores } from '@/api/score'
+import { listBadges } from '@/api/badge'
 
 const userStore = useUserStore()
 
@@ -86,70 +87,93 @@ const greeting = computed(() => {
   if (h < 18) return '下午好'
   return '晚上好'
 })
+
+const stats = ref({})
+const scoreCount = ref(0)
+const badgeCount = ref({ unlocked: 0, total: 0 })
+const statsLoading = ref(false)
+
+const modules = [
+  { path: '/scores',        name: '我的谱仓',  desc: '上传管理乐谱',     icon: markRaw(Folder),       color: '#1677ff' },
+  { path: '/plans',         name: '练习计划',  desc: '阶段性练习目标',   icon: markRaw(Calendar),     color: '#722ed1' },
+  { path: '/logs',          name: '练习日志',  desc: '记录与统计',       icon: markRaw(TrendCharts),  color: '#13c2c2' },
+  { path: '/setlists',      name: '歌单',      desc: '多对多收藏',       icon: markRaw(Tickets),      color: '#fa8c16' },
+  { path: '/friends',       name: '社交',      desc: '加好友互关注',     icon: markRaw(User),         color: '#52c41a' },
+  { path: '/song-requests', name: 'AI 点歌',   desc: 'AI 清洗自由文本',  icon: markRaw(Microphone),   color: '#eb2f96' },
+  { path: '/badges',        name: '成就徽章',  desc: '事件驱动发牌',     icon: markRaw(Medal),        color: '#faad14' },
+]
+const tools = [
+  { path: '/tuner',     name: '吉他定音器', desc: '5 种调弦预设',         icon: markRaw(Setting),     color: '#1677ff' },
+  { path: '/metronome', name: '节拍器',     desc: '30-250 BPM',           icon: markRaw(AlarmClock),  color: '#13c2c2' },
+]
+
+onMounted(async () => {
+  statsLoading.value = true
+  try {
+    const [s, scores, badges] = await Promise.all([
+      getStats(), listScores(), listBadges(),
+    ])
+    stats.value = s
+    scoreCount.value = scores.length
+    badgeCount.value = {
+      unlocked: badges.filter(b => b.unlocked).length,
+      total: badges.length,
+    }
+  } catch (e) {
+    // 忽略：可能未登录或后端未起
+  } finally {
+    statsLoading.value = false
+  }
+})
 </script>
 
 <style scoped>
-.home { padding-bottom: 60px; }
+.home { max-width: 1200px; margin: 0 auto; padding: 24px; }
 
-.hero {
-  background: var(--lyra-bg-warm);
-  border-bottom: 1px solid var(--lyra-border);
+.welcome {
+  background: #fff;
+  border: 1px solid var(--lyra-border-soft);
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin-bottom: 16px;
 }
-.hero-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 64px 24px 56px;
+.welcome h1 { margin: 0 0 6px; }
+.welcome-sub { margin: 0; color: var(--lyra-text-muted); font-size: 13px; }
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
 }
-.hero h1 {
-  margin: 0;
-  font-size: 38px;
-  font-weight: 700;
+.stat-card { padding: 4px 0; }
+.stat-label { color: var(--lyra-text-muted); font-size: 13px; }
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
   color: var(--lyra-text);
+  margin-top: 6px;
+  line-height: 1.2;
 }
-.hero-greeting { color: var(--lyra-text-muted); font-weight: 400; }
-.hero-name { color: var(--el-color-primary); }
-.hero-sub {
-  margin-top: 12px;
-  color: var(--lyra-text-muted);
-  font-size: 16px;
-  letter-spacing: 0.5px;
-}
+.stat-unit { font-size: 13px; color: var(--lyra-text-dim); font-weight: 400; }
 
-.modules {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 24px 0;
-}
+.section { margin-bottom: 24px; }
 .section-title {
-  font-size: 20px;
-  margin: 0 0 20px;
+  font-size: 14px;
+  margin: 0 0 12px;
   color: var(--lyra-text);
   font-weight: 600;
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
 }
-.mod {
-  cursor: pointer;
-  text-align: center;
-  padding: 8px 4px 4px;
-  transition: transform 0.18s;
-}
-.mod:hover { transform: translateY(-2px); }
-.mod-emoji {
-  font-size: 44px;
-  margin: 8px 0 12px;
-}
-.mod-name {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--lyra-text);
-}
-.mod-desc {
-  margin-top: 6px;
-  color: var(--lyra-text-muted);
-  font-size: 13px;
-}
+.mod { cursor: pointer; transition: transform 0.15s; }
+.mod:hover { transform: translateY(-1px); }
+.mod-row { display: flex; align-items: center; gap: 14px; }
+.mod-icon { font-size: 28px; flex-shrink: 0; }
+.mod-text { flex: 1; }
+.mod-name { font-weight: 600; font-size: 14px; color: var(--lyra-text); }
+.mod-desc { color: var(--lyra-text-muted); font-size: 12px; margin-top: 4px; }
 </style>

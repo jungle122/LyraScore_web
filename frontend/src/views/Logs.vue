@@ -162,7 +162,7 @@ onMounted(loadAll)
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { text-align: center; padding: 4px; }
 .stat-label { color: #999; font-size: 13px; }
-.stat-value { font-size: 32px; font-weight: 600; color: #409eff; margin-top: 6px; }
+.stat-value { font-size: 32px; font-weight: 600; color: var(--el-color-primary); margin-top: 6px; }
 .unit { font-size: 14px; color: #999; font-weight: normal; margin-left: 4px; }
 .section { margin-bottom: 20px; }
 </style>

@@ -84,6 +84,11 @@ const router = createRouter({
       component: () => import('@/views/Metronome.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/find-tab',
+      component: () => import('@/views/FindTab.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

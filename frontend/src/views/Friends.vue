@@ -97,7 +97,7 @@ onMounted(loadAll)
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .row-card { margin-bottom: 8px; }
 .row { display: flex; align-items: center; gap: 12px; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: #409eff; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--el-color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
 .meta { flex: 1; }
 .name { font-weight: 600; }
 .hint { color: #999; font-size: 13px; }

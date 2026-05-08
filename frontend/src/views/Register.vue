@@ -81,11 +81,11 @@ async function handleRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lyra-bg-warm);
+  background: var(--lyra-bg-soft);
 }
 .register-card {
   width: 380px;
-  border-radius: 12px !important;
-  box-shadow: 0 20px 50px rgba(217, 119, 6, 0.10) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 16px 40px rgba(22, 119, 255, 0.10) !important;
 }
 </style>

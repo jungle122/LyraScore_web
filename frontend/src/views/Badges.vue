@@ -27,7 +27,7 @@
             :percentage="progressOf(b)"
             :stroke-width="6"
             :show-text="false"
-            color="#d97706"
+            color="#1677ff"
             class="progress"
           />
           <div class="progress-text">{{ progressLabelOf(b) }}</div>
@@ -114,7 +114,7 @@ onMounted(load)
   align-items: baseline;
   gap: 8px;
   padding: 16px 24px;
-  background: var(--lyra-bg-warm);
+  background: var(--lyra-bg-accent);
   border-radius: 10px;
   border: 1px solid var(--lyra-border);
   margin-bottom: 24px;
