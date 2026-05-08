@@ -69,6 +69,11 @@ const router = createRouter({
       component: () => import('@/views/SongRequests.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/badges',
+      component: () => import('@/views/Badges.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

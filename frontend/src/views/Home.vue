@@ -33,6 +33,10 @@
         <h3>🎤 AI 点歌</h3>
         <p>自由文本→AI 清洗成曲名/歌手</p>
       </el-card>
+      <el-card class="mod" shadow="hover" @click="$router.push('/badges')">
+        <h3>🏅 成就徽章</h3>
+        <p>事件驱动自动发牌</p>
+      </el-card>
     </div>
 
     <div class="footer">

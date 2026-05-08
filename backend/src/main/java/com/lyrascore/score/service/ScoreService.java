@@ -1,5 +1,6 @@
 package com.lyrascore.score.service;
 
+import com.lyrascore.badge.service.BadgeService;
 import com.lyrascore.common.BusinessException;
 import com.lyrascore.score.dto.ScoreCreateRequest;
 import com.lyrascore.score.dto.ScoreVO;
@@ -28,6 +29,7 @@ public class ScoreService {
     private static final Set<String> ALLOWED_EXT = Set.of("jpg", "jpeg", "png", "gif", "webp");
 
     private final ScoreMapper scoreMapper;
+    private final BadgeService badgeService;
 
     @Value("${lyrascore.upload-dir:./uploads}")
     private String uploadDir;
@@ -66,6 +68,9 @@ public class ScoreService {
         score.setIsPublic(req.getIsPublic() == null ? 0 : req.getIsPublic());
         score.setMemo(req.getMemo());
         scoreMapper.insert(score);
+
+        // 上传乐谱后评估 score_count 类徽章
+        badgeService.evaluateAndAward(userId);
         return score.getId();
     }
 
