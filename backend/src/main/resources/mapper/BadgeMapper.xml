@@ -45,4 +45,27 @@
         SELECT COUNT(*) FROM t_score WHERE user_id = #{userId}
     </select>
 
+    <select id="countLogsOfUser" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM t_practice_log WHERE user_id = #{userId}
+    </select>
+
+    <select id="countPlansOfUser" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM t_practice_plan WHERE user_id = #{userId}
+    </select>
+
+    <select id="countSetlistsOfUser" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM t_setlist WHERE user_id = #{userId}
+    </select>
+
+    <!-- 好友：自引用 N:M，user_id 可能在 user_id_1 或 user_id_2，且 status=1 -->
+    <select id="countFriendsOfUser" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM t_friendship
+        WHERE (user_id_1 = #{userId} OR user_id_2 = #{userId})
+          AND status = 1
+    </select>
+
+    <select id="countSongRequestsOfUser" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM t_song_request WHERE sender_id = #{userId}
+    </select>
+
 </mapper>

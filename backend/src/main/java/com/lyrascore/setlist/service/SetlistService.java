@@ -1,5 +1,6 @@
 package com.lyrascore.setlist.service;
 
+import com.lyrascore.badge.service.BadgeService;
 import com.lyrascore.common.BusinessException;
 import com.lyrascore.score.entity.Score;
 import com.lyrascore.score.mapper.ScoreMapper;
@@ -20,6 +21,7 @@ public class SetlistService {
 
     private final SetlistMapper setlistMapper;
     private final ScoreMapper scoreMapper;
+    private final BadgeService badgeService;
 
     public Long create(SetlistCreateRequest req, Long userId) {
         Setlist s = new Setlist();
@@ -28,6 +30,7 @@ public class SetlistService {
         s.setDescription(req.getDescription());
         s.setCoverUrl(req.getCoverUrl());
         setlistMapper.insert(s);
+        badgeService.evaluateAndAward(userId);
         return s.getId();
     }
 

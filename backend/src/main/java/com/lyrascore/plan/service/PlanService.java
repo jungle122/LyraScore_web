@@ -1,5 +1,6 @@
 package com.lyrascore.plan.service;
 
+import com.lyrascore.badge.service.BadgeService;
 import com.lyrascore.common.BusinessException;
 import com.lyrascore.plan.dto.PlanCreateRequest;
 import com.lyrascore.plan.dto.PlanDetailVO;
@@ -20,6 +21,7 @@ public class PlanService {
 
     private final PlanMapper planMapper;
     private final ScoreMapper scoreMapper;
+    private final BadgeService badgeService;
 
     public Long create(PlanCreateRequest req, Long userId) {
         if (req.getEndDate().isBefore(req.getStartDate())) {
@@ -32,6 +34,7 @@ public class PlanService {
         plan.setStartDate(req.getStartDate());
         plan.setEndDate(req.getEndDate());
         planMapper.insertPlan(plan);
+        badgeService.evaluateAndAward(userId);
         return plan.getId();
     }
 

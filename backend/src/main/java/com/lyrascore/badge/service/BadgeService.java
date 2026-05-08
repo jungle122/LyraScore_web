@@ -31,18 +31,27 @@ public class BadgeService {
         List<Badge> all = badgeMapper.selectAll();
         Set<Long> owned = new HashSet<>(badgeMapper.selectBadgeIdsOfUser(userId));
 
-        Long totalMins = logMapper.sumMinutes(userId);
-        if (totalMins == null) totalMins = 0L;
-        Long scoreCount = badgeMapper.countScoresOfUser(userId);
-        if (scoreCount == null) scoreCount = 0L;
-        boolean hasAnyLog = totalMins > 0;
+        long totalMins   = orZero(logMapper.sumMinutes(userId));
+        long scoreCount  = orZero(badgeMapper.countScoresOfUser(userId));
+        long logCount    = orZero(badgeMapper.countLogsOfUser(userId));
+        long planCount   = orZero(badgeMapper.countPlansOfUser(userId));
+        long setlistCnt  = orZero(badgeMapper.countSetlistsOfUser(userId));
+        long friendCount = orZero(badgeMapper.countFriendsOfUser(userId));
+        long songCount   = orZero(badgeMapper.countSongRequestsOfUser(userId));
+        boolean hasAnyLog = logCount > 0;
 
         for (Badge b : all) {
             if (owned.contains(b.getId())) continue;
+            int v = b.getConditionValue();
             boolean qualify = switch (b.getConditionType()) {
-                case "first_log"     -> hasAnyLog;
-                case "total_minutes" -> totalMins >= b.getConditionValue();
-                case "score_count"   -> scoreCount >= b.getConditionValue();
+                case "first_log"            -> hasAnyLog;
+                case "total_minutes"        -> totalMins   >= v;
+                case "log_count"            -> logCount    >= v;
+                case "score_count"          -> scoreCount  >= v;
+                case "plan_count"           -> planCount   >= v;
+                case "setlist_count"        -> setlistCnt  >= v;
+                case "friend_count"         -> friendCount >= v;
+                case "song_request_count"   -> songCount   >= v;
                 default -> false;
             };
             if (qualify) {
@@ -53,4 +62,6 @@ public class BadgeService {
             }
         }
     }
+
+    private static long orZero(Long v) { return v == null ? 0L : v; }
 }

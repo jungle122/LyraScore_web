@@ -31,10 +31,35 @@
         </el-radio-group>
       </div>
 
-      <!-- 多图：竖排 -->
-      <div class="images">
-        <img v-for="(url, i) in imageList" :key="i" :src="resolveImg(url)" class="score-img" />
+      <!-- 阅读工具条 -->
+      <div class="viewer-toolbar" v-if="imageList.length > 0">
+        <el-button-group>
+          <el-button :type="viewMode === 'single' ? 'primary' : ''" @click="viewMode = 'single'">1 页显示</el-button>
+          <el-button :type="viewMode === 'double' ? 'primary' : ''" @click="viewMode = 'double'">2 页显示</el-button>
+        </el-button-group>
+        <el-button @click="openPreviewAt(0)">🔍 大图预览</el-button>
+        <el-button @click="toggleFullscreen">⛶ {{ isFullscreen ? '退出全屏' : '全屏显示' }}</el-button>
       </div>
+
+      <!-- 多图：1页 / 2页 切换 -->
+      <div ref="imagesEl" class="images" :class="`mode-${viewMode}`">
+        <img
+          v-for="(url, i) in imageList"
+          :key="i"
+          :src="resolveImg(url)"
+          class="score-img"
+          @click="openPreviewAt(i)"
+        />
+      </div>
+
+      <!-- 大图预览 lightbox -->
+      <el-image-viewer
+        v-if="previewVisible"
+        :url-list="absoluteImageList"
+        :initial-index="previewIndex"
+        @close="previewVisible = false"
+        teleported
+      />
 
       <div v-if="data.memo" class="memo">
         <h3>备忘录</h3>
@@ -91,9 +116,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElImageViewer } from 'element-plus'
 import { getScore, deleteScore, updateScoreStatus, updateScore } from '@/api/score'
 
 const route = useRoute()
@@ -111,6 +136,31 @@ const form = reactive({
 const imageList = computed(() =>
   (data.value?.imageUrl || '').split(',').map(s => s.trim()).filter(Boolean)
 )
+const absoluteImageList = computed(() => imageList.value.map(resolveImg))
+
+// 阅读模式
+const viewMode = ref('single')          // 'single' | 'double'
+const previewVisible = ref(false)
+const previewIndex = ref(0)
+const isFullscreen = ref(false)
+const imagesEl = ref(null)
+
+function openPreviewAt(i) {
+  previewIndex.value = i
+  previewVisible.value = true
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    imagesEl.value?.requestFullscreen?.()
+  } else {
+    document.exitFullscreen?.()
+  }
+}
+
+function onFullscreenChange() {
+  isFullscreen.value = !!document.fullscreenElement
+}
 
 function resolveImg(url) {
   if (!url) return ''
@@ -173,7 +223,13 @@ async function onDelete() {
   router.push('/scores')
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  document.addEventListener('fullscreenchange', onFullscreenChange)
+})
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
+})
 </script>
 
 <style scoped>
@@ -192,8 +248,38 @@ onMounted(load)
   margin-bottom: 20px;
 }
 .status-label { color: var(--lyra-text); font-weight: 500; }
-.images { display: flex; flex-direction: column; gap: 12px; }
-.score-img { width: 100%; border: 1px solid #eee; border-radius: 4px; }
+.viewer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: var(--el-color-primary-light-9);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.images { display: grid; gap: 12px; }
+.images.mode-single { grid-template-columns: 1fr; }
+.images.mode-double { grid-template-columns: 1fr 1fr; }
+
+.score-img {
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: zoom-in;
+  background: #fff;
+}
+
+/* 全屏模式 */
+.images:fullscreen {
+  background: #1f2937;
+  padding: 24px;
+  overflow-y: auto;
+}
+.images:fullscreen .score-img {
+  background: #fff;
+}
 .memo { margin-top: 24px; }
 .memo h3 { margin-bottom: 8px; }
 .memo pre { background: #f5f7fa; padding: 12px; border-radius: 4px; white-space: pre-wrap; font-family: inherit; }

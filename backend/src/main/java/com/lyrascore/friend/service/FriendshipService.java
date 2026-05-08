@@ -1,5 +1,6 @@
 package com.lyrascore.friend.service;
 
+import com.lyrascore.badge.service.BadgeService;
 import com.lyrascore.common.BusinessException;
 import com.lyrascore.friend.entity.Friendship;
 import com.lyrascore.friend.mapper.FriendshipMapper;
@@ -17,6 +18,7 @@ public class FriendshipService {
 
     private final FriendshipMapper friendshipMapper;
     private final UserMapper userMapper;
+    private final BadgeService badgeService;
 
     public void requestByUsername(String targetUsername, Long meId) {
         User target = userMapper.selectByUsername(targetUsername);
@@ -53,6 +55,12 @@ public class FriendshipService {
     public void accept(Long id, Long meId) {
         int rows = friendshipMapper.accept(id, meId);
         if (rows == 0) throw new BusinessException(1506, "申请不存在或无权处理");
+        // 双方好友数都 +1，都评估一下
+        Friendship f = friendshipMapper.selectById(id);
+        if (f != null) {
+            badgeService.evaluateAndAward(f.getUserId1());
+            badgeService.evaluateAndAward(f.getUserId2());
+        }
     }
 
     public void delete(Long id, Long meId) {

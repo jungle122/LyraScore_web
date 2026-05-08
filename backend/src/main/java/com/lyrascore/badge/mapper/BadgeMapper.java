@@ -20,4 +20,14 @@ public interface BadgeMapper {
 
     /** 用户上传的乐谱总数 —— 评估 score_count 类徽章用 */
     Long countScoresOfUser(@Param("userId") Long userId);
+
+    Long countLogsOfUser(@Param("userId") Long userId);
+
+    Long countPlansOfUser(@Param("userId") Long userId);
+
+    Long countSetlistsOfUser(@Param("userId") Long userId);
+
+    Long countFriendsOfUser(@Param("userId") Long userId);
+
+    Long countSongRequestsOfUser(@Param("userId") Long userId);
 }

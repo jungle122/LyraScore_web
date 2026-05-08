@@ -1,6 +1,7 @@
 package com.lyrascore.song.service;
 
 import com.lyrascore.ai.AiService;
+import com.lyrascore.badge.service.BadgeService;
 import com.lyrascore.common.BusinessException;
 import com.lyrascore.song.dto.SongRequestCreate;
 import com.lyrascore.song.entity.SongRequest;
@@ -21,6 +22,7 @@ public class SongRequestService {
     private final SongRequestMapper songMapper;
     private final UserMapper userMapper;
     private final AiService aiService;
+    private final BadgeService badgeService;
 
     public Long create(SongRequestCreate req, Long senderId) {
         User receiver = userMapper.selectById(req.getReceiverId());
@@ -48,6 +50,7 @@ public class SongRequestService {
             s.setStatus(0);
         }
         songMapper.insert(s);
+        badgeService.evaluateAndAward(senderId);
         return s.getId();
     }
 
