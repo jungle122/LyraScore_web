@@ -21,18 +21,18 @@
       </el-card>
     </div>
 
-    <!-- AI 练习周报 -->
+    <!-- AI 练习总结 -->
     <el-card class="section ai-report-card" shadow="never">
       <template #header>
         <div class="ai-header">
-          <b>🤖 AI 练习周报</b>
+          <b>🤖 AI 练习总结</b>
           <el-button
             type="primary"
             size="small"
             :loading="reportLoading"
             @click="loadReport"
           >
-            {{ report ? '重新生成' : '生成本周总结' }}
+            {{ report ? '重新生成' : '生成练习总结' }}
           </el-button>
         </div>
       </template>

@@ -53,18 +53,19 @@ public class AiService {
 
     private static final String COACH_PROMPT = """
             你是 LyraScore 的吉他练习教练 Lyra Coach。
-            基于用户的练习数据，写一份温暖、具体的练习总结报告。要求：
+            基于用户的练习数据，写一份温暖、具体的练习总结。要求：
             1. 总长 120-200 字，用第二人称「你」，语气友好像朋友
-            2. 必须包含：累计/本周时长的亮点、最爱练的曲目（含具体分钟数）、近 7 天的练习节奏、一句改进建议
-            3. 不要使用 markdown 标题或符号，直接写流畅自然段
-            4. 结尾用一句激励的话收尾，比如「下周加油！」之类
-            5. 如果数据不足（比如没练习记录），就坦诚指出并鼓励用户开始记录
+            2. 必须包含：累计/本周时长的亮点、最爱练的曲目（含具体分钟数）、近 7 天的练习节奏
+            3. 不要给出泛泛的练习建议（例如「多练音阶」「加强和弦转换」之类的空话）
+            4. 不要使用 markdown 标题或符号，直接写流畅自然段
+            5. 结尾用一句鼓励的话收尾
+            6. 如果数据不足（比如没练习记录），就坦诚指出并鼓励用户开始记录
             """;
 
-    /** 生成 AI 练习周报，失败返回 null。 */
+    /** 生成 AI 练习总结，失败返回 null。 */
     public String generatePracticeReport(String statsJson) {
         if (!enabled) {
-            log.info("AI 未启用，跳过周报生成");
+            log.info("AI 未启用，跳过练习总结生成");
             return null;
         }
         if (apiKey == null || apiKey.isBlank()) {
@@ -92,7 +93,7 @@ public class AiService {
             String content = root.path("choices").path(0).path("message").path("content").asText("");
             return content.isBlank() ? null : content.trim();
         } catch (Exception e) {
-            log.warn("AI 周报生成失败: {}", e.getMessage());
+            log.warn("AI 练习总结生成失败: {}", e.getMessage());
             return null;
         }
     }

@@ -17,7 +17,7 @@ GitHub：<https://github.com/jungle122/LyraScore_web>
 | **👥 社交** | 用户名搜索加好友（自引用 N:M）、AI 智能点歌台（自由文本 → `(歌名, 歌手)`）、字典化快捷短语留言 |
 | **🏆 徽章** | 17 张徽章 / 7 种触发条件，`@EventListener` 事件驱动自动发牌、`INSERT IGNORE` 幂等 |
 | **🛠️ 实用工具** | 吉他定音器（5 种调弦预设 + Web Audio 变调）、节拍器（30–250 BPM）、找谱搜索（简繁转换 + 多站快搜） |
-| **🤖 AI 双场景** | ① 点歌信息清洗（艺名归一化）② 练习周报教练点评；阿里云百炼 `qwen-turbo`，失败自动降级 |
+| **🤖 AI 双场景** | ① 点歌信息清洗（艺名归一化）② 练习总结教练点评；阿里云百炼 `qwen-turbo`，失败自动降级 |
 | **👑 管理员后台** | 数据大盘（9 项跨表 COUNT / SUM）、用户冻结/解冻、字典 CRUD；`@RequireRole("admin")` RBAC 双层保护 |
 
 ---
@@ -117,14 +117,14 @@ LyraScore/
 │   │   ├── user/                # 用户 + JWT
 │   │   ├── score/               # 谱仓
 │   │   ├── plan/                # 练习计划
-│   │   ├── log/                 # 练习日志 + AI 周报
+│   │   ├── log/                 # 练习日志 + AI 练习总结
 │   │   ├── setlist/             # 歌单
 │   │   ├── friendship/          # 好友（自引用 N:M）
 │   │   ├── songrequest/         # 点歌 + AI 清洗
 │   │   ├── badge/               # 徽章 + EventListener
 │   │   ├── admin/               # 管理员后台 + @RequireRole
 │   │   ├── common/              # JwtInterceptor / 异常处理 / R 包装
-│   │   └── ai/                  # AiService（点歌清洗 + 周报）
+│   │   └── ai/                  # AiService（点歌清洗 + 练习总结）
 │   └── src/main/resources/
 │       ├── application.yml      # 公共配置
 │       ├── application-dev.yml  # 开发环境（读环境变量）
@@ -156,7 +156,7 @@ LyraScore/
 2. **JWT + 自写拦截器** — 不引 Spring Security；`HandlerInterceptor` 解析 token → `ThreadLocal` 存上下文。
 3. **`@RequireRole` 自定义注解 + 反射** — 类级或方法级 RBAC，管理员后台所有接口受保护。
 4. **徽章用 Spring `@EventListener`** — 替代 PRD 早期提到的「DB 触发器」方案，业务事件解耦。
-5. **AI 失败必须降级** — 任何 `RestClient` 异常都不应阻塞主流程：点歌写 `status=2` 待人工审核 / 周报回退本地拼接文案。
+5. **AI 失败必须降级** — 任何 `RestClient` 异常都不应阻塞主流程：点歌写 `status=2` 待人工审核 / 练习总结回退本地拼接文案。
 6. **外键策略分级** — 关联表（plan_items / setlist_items）→ `CASCADE`，历史日志 → `RESTRICT` 不可丢。
 
 ---

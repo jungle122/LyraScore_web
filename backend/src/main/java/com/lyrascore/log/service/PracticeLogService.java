@@ -74,7 +74,7 @@ public class PracticeLogService {
         return result;
     }
 
-    /** 调 AI 生成练习周报；失败返回降级文本 */
+    /** 调 AI 生成练习总结；失败返回降级文本 */
     public Map<String, Object> generateReport(Long userId) {
         Map<String, Object> stats = stats(userId);
         Map<String, Object> result = new HashMap<>();
