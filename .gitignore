@@ -17,3 +17,11 @@ backend/uploads/scores/*
 !backend/uploads/scores/.gitkeep
 backend/uploads/avatars/*
 !backend/uploads/avatars/.gitkeep
+
+# Claude Code 本地缓存
+.claude/
+
+# 学校模板与参考案例（本地备查，不进 git）
+docs/*.docx
+docs/*.doc
+docs/架构图.html
