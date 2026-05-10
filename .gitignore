@@ -21,6 +21,9 @@ backend/uploads/avatars/*
 # Claude Code 本地缓存
 .claude/
 
+# Obsidian 工作区缓存
+docs/.obsidian/
+
 # 学校模板与参考案例（本地备查，不进 git）
 docs/*.docx
 docs/*.doc

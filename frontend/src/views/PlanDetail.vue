@@ -41,21 +41,15 @@
       </div>
     </div>
 
-    <!-- 添加乐谱 modal -->
-    <el-dialog v-model="showAdd" title="从我的谱仓选择乐谱" width="500">
-      <el-select v-model="selectedScoreId" placeholder="选择乐谱" filterable style="width: 100%">
-        <el-option
-          v-for="s in availableScores"
-          :key="s.id"
-          :label="`${s.title} - ${s.artist || '—'}`"
-          :value="s.id"
-        />
-      </el-select>
-      <template #footer>
-        <el-button @click="showAdd = false">取消</el-button>
-        <el-button type="primary" :loading="adding" @click="onAddItem">添加</el-button>
-      </template>
-    </el-dialog>
+    <!-- 添加乐谱：跳转到「谱仓选择器」大对话框，支持搜索/筛选/批量勾选 -->
+    <ScorePickerDialog
+      v-model="showAdd"
+      :exclude-ids="existingScoreIds"
+      :submitting="adding"
+      title="从我的谱仓选择乐谱（可多选）"
+      confirm-text="加入计划"
+      @confirm="onAddItems"
+    />
 
     <!-- 记录练习 modal -->
     <el-dialog v-model="showLog" :title="`记录练习 - ${currentScore?.scoreTitle || ''}`" width="500">
@@ -79,12 +73,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getPlan, addPlanItem, removePlanItem, updatePlanStatus } from '@/api/plan'
-import { listScores } from '@/api/score'
 import { createLog } from '@/api/log'
+import ScorePickerDialog from '@/components/ScorePickerDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -94,8 +88,11 @@ const loading = ref(false)
 
 const showAdd = ref(false)
 const adding = ref(false)
-const availableScores = ref([])
-const selectedScoreId = ref(null)
+
+// 当前计划已收录的 scoreId 列表，传给选择器用于灰掉/排除
+const existingScoreIds = computed(() =>
+  (data.value?.items || []).map(it => it.scoreId)
+)
 
 const showLog = ref(false)
 const logging = ref(false)
@@ -120,20 +117,17 @@ async function load() {
   }
 }
 
-async function openAddDialog() {
-  if (availableScores.value.length === 0) {
-    availableScores.value = await listScores()
-  }
-  selectedScoreId.value = null
+function openAddDialog() {
   showAdd.value = true
 }
 
-async function onAddItem() {
-  if (!selectedScoreId.value) { ElMessage.warning('请选择乐谱'); return }
+// 批量加入：并发请求，全部成功才提示成功；失败由 axios 拦截器统一弹错
+async function onAddItems(scoreIds) {
+  if (!scoreIds || scoreIds.length === 0) return
   adding.value = true
   try {
-    await addPlanItem(route.params.id, selectedScoreId.value)
-    ElMessage.success('已添加')
+    await Promise.all(scoreIds.map(id => addPlanItem(route.params.id, id)))
+    ElMessage.success(`已加入 ${scoreIds.length} 首`)
     showAdd.value = false
     load()
   } finally {

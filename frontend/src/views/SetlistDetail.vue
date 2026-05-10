@@ -27,32 +27,34 @@
       </el-card>
     </div>
 
-    <el-dialog v-model="showAdd" title="添加乐谱到歌单" width="500">
-      <el-select v-model="selectedId" placeholder="选择乐谱" filterable style="width: 100%">
-        <el-option v-for="s in scores" :key="s.id" :label="`${s.title} - ${s.artist || '—'}`" :value="s.id" />
-      </el-select>
-      <template #footer>
-        <el-button @click="showAdd = false">取消</el-button>
-        <el-button type="primary" :loading="adding" @click="onAdd">添加</el-button>
-      </template>
-    </el-dialog>
+    <ScorePickerDialog
+      v-model="showAdd"
+      :exclude-ids="existingScoreIds"
+      :submitting="adding"
+      title="添加乐谱到歌单（可多选）"
+      confirm-text="收录到歌单"
+      @confirm="onAddItems"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getSetlist, addSetlistItem, removeSetlistItem } from '@/api/setlist'
-import { listScores } from '@/api/score'
+import ScorePickerDialog from '@/components/ScorePickerDialog.vue'
 
 const route = useRoute()
 const data = ref(null)
 const loading = ref(false)
 const showAdd = ref(false)
 const adding = ref(false)
-const scores = ref([])
-const selectedId = ref(null)
+
+// 当前歌单已收录的 scoreId 列表，传给选择器用于排除
+const existingScoreIds = computed(() =>
+  (data.value?.items || []).map(it => it.scoreId)
+)
 
 function resolveImg(url) {
   if (!url) return ''
@@ -68,18 +70,17 @@ async function load() {
   try { data.value = await getSetlist(route.params.id) } finally { loading.value = false }
 }
 
-async function openAdd() {
-  if (scores.value.length === 0) scores.value = await listScores()
-  selectedId.value = null
+function openAdd() {
   showAdd.value = true
 }
 
-async function onAdd() {
-  if (!selectedId.value) { ElMessage.warning('请选择乐谱'); return }
+// 批量收录：并发请求
+async function onAddItems(scoreIds) {
+  if (!scoreIds || scoreIds.length === 0) return
   adding.value = true
   try {
-    await addSetlistItem(route.params.id, selectedId.value)
-    ElMessage.success('已添加')
+    await Promise.all(scoreIds.map(id => addSetlistItem(route.params.id, id)))
+    ElMessage.success(`已收录 ${scoreIds.length} 首`)
     showAdd.value = false
     load()
   } finally { adding.value = false }
