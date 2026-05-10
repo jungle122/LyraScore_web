@@ -9,6 +9,7 @@
       <el-form :model="form" label-width="100px">
         <el-form-item label="乐谱图片" required>
           <el-upload
+            ref="uploadRef"
             :auto-upload="false"
             :limit="12"
             :on-change="onFileChange"
@@ -19,7 +20,7 @@
           >
             <el-icon><Plus /></el-icon>
             <template #tip>
-              <div class="el-upload__tip">支持多张 jpg/png/gif/webp，最多 12 张，单张最大 10MB。</div>
+              <div class="el-upload__tip">支持多张 jpg/png/gif/webp，最多 12 张，单张最大 10MB。<br/>💡 也可以从微信、截图工具直接 <b>Ctrl+V</b> 粘贴图片。</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -62,7 +63,7 @@
 
         <el-form-item label="是否公开">
           <el-switch v-model="form.isPublic" :active-value="1" :inactive-value="0" />
-          <span class="hint">公开后其他用户也能看到</span>
+          <span class="hint">为公开广场预留字段，跨用户浏览功能尚未开放</span>
         </el-form-item>
 
         <el-form-item label="备忘录">
@@ -79,13 +80,14 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { createScore } from '@/api/score'
 
 const router = useRouter()
+const uploadRef = ref()       // 拿到 el-upload 实例，用来把粘贴的图片塞回去
 const files = ref([])         // 多张：File 对象数组
 const loading = ref(false)
 const form = reactive({
@@ -108,6 +110,34 @@ function onFileChange(uploadFile, fileList) {
 function onFileRemove(uploadFile, fileList) {
   files.value = fileList.map(f => f.raw).filter(Boolean)
 }
+
+// 监听粘贴：从剪贴板里挑出图片文件，喂给 el-upload
+function onPaste(e) {
+  const items = e.clipboardData?.items
+  if (!items || items.length === 0) return
+  let pasted = 0
+  for (const item of items) {
+    // kind === 'file' 表示是文件而非文本；过滤出图片
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const blob = item.getAsFile()
+      if (!blob) continue
+      // 微信/截图复制出来的图常常没有文件名，这里手动补一个，否则后端拿到的 originalFilename 是空
+      const ext = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg')
+      const named = new File([blob], `paste-${Date.now()}-${pasted}.${ext}`, { type: blob.type })
+      // handleStart 是 el-upload 的内部方法：把一个 File 当作"用户刚选了这个文件"塞进 fileList，
+      // 走完整生命周期（会触发 on-change，files.value 自动更新）
+      uploadRef.value?.handleStart(named)
+      pasted++
+    }
+  }
+  if (pasted > 0) {
+    e.preventDefault()
+    ElMessage.success(`已粘贴 ${pasted} 张图片`)
+  }
+}
+
+onMounted(() => window.addEventListener('paste', onPaste))
+onBeforeUnmount(() => window.removeEventListener('paste', onPaste))
 
 async function submit() {
   if (files.value.length === 0) {

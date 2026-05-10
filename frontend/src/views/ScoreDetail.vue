@@ -101,6 +101,7 @@
         </el-form-item>
         <el-form-item label="是否公开">
           <el-switch v-model="form.isPublic" :active-value="1" :inactive-value="0" />
+          <span class="hint">为公开广场预留字段，跨用户浏览功能尚未开放</span>
         </el-form-item>
         <el-form-item label="备忘录">
           <el-input v-model="form.memo" type="textarea" :rows="3" />
@@ -284,4 +285,5 @@ onUnmounted(() => {
 .memo h3 { margin-bottom: 8px; }
 .memo pre { background: #f5f7fa; padding: 12px; border-radius: 4px; white-space: pre-wrap; font-family: inherit; }
 .dialog-tip { color: var(--lyra-text-muted); font-size: 13px; margin: 8px 0 0; padding: 8px 12px; background: var(--el-color-primary-light-9); border-radius: 6px; }
+.hint { color: #999; margin-left: 12px; font-size: 13px; }
 </style>
