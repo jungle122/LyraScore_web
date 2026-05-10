@@ -89,7 +89,7 @@ npm install
 npm run dev
 ```
 
-监听 `http://localhost:5173`，Vite 代理把 `/api` 与 `/uploads` 都转给后端 8080。
+监听 `http://localhost:5200`，Vite 代理把 `/api` 与 `/uploads` 都转给后端 8080。
 
 ---
 

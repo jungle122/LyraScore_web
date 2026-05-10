@@ -23,7 +23,7 @@ When asked to "start coding," consult `docs/开发计划.md` first — it define
 | Run backend tests | `cd backend && mvn test` |
 | Run a single backend test | `cd backend && mvn test -Dtest=ClassName#methodName` |
 | Install frontend deps | `cd frontend && npm install` |
-| Run frontend (dev) | `cd frontend && npm run dev` — listens on `http://localhost:5173`, proxies `/api` to `:8080` |
+| Run frontend (dev) | `cd frontend && npm run dev` — listens on `http://localhost:5200`, proxies `/api` to `:8080` |
 | Build frontend | `cd frontend && npm run build` |
 
 The backend reads runtime config from environment variables (`DB_PASSWORD`, `JWT_SECRET`, `DASHSCOPE_API_KEY`, `AI_ENABLED`) — see `.env.example`. None are committed. On Windows PowerShell, source them with the snippet in `README.md`.
